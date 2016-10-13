@@ -1,0 +1,60 @@
+
+import java.util.regex.Pattern.Branch;
+
+import me.gking2224.awsplugin.task.CreateInstanceTask
+import me.gking2224.buildtools.tasks.RemoteExec
+import me.gking2224.dbgp.plugin.task.ExecuteDatabaseScript
+
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        jcenter()
+//        maven {
+//            url 'https://artifactory.gking2224.me/artifactory/libs-snapshot'
+//        }
+//        maven {
+//            url 'https://artifactory.gking2224.me/artifactory/libs-release'
+//        }
+        maven { url "https://plugins.gradle.org/m2/" }
+    }
+    dependencies {
+        classpath "me.gking2224:BuildToolsGradlePlugin:0.1.8-SNAPSHOT"
+        classpath "me.gking2224:AmazonAWSGradlePlugin:0.1.8-SNAPSHOT"
+        classpath "me.gking2224:DatabaseBuildGradlePlugin:0.1.0-SNAPSHOT"
+        classpath "mysql:mysql-connector-java:5.1.39"
+    }
+}
+apply plugin: 'me.gking2224.buildtools'
+apply plugin: 'me.gking2224.awsplugin'
+apply plugin: 'me.gking2224.databasebuild'
+
+repositories {
+  mavenCentral()
+}
+
+task createDatabaseServer << {
+    
+}
+
+configurations {
+    driver {
+        dependencies {
+            runtime "mysql:mysql-connector-java:5.1.39"
+        }
+    }
+}
+//dependencies {
+//    driver
+//}
+
+URLClassLoader loader = GroovyObject.class.classLoader
+//configurations.driver.each {File file ->
+//    loader.addURL(file.toURI().toURL())
+//}
+
+dbconfig {
+    createDatabaseScript dbDir, "createDatabaseAndUser.sql"
+}
+
+task deployDbFullOnNewServer(dependsOn:[createDatabaseServer,makeDatabase,deployDbFull])
