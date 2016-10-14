@@ -3,6 +3,7 @@ package me.gking2224.securityms.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -12,6 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -43,6 +45,8 @@ public class User implements java.io.Serializable {
     private boolean enabled = true;
     
     private Set<Role> roles;
+
+    private Set<UserPermission> userPermissions;
     
     public User() {
         super();
@@ -98,6 +102,15 @@ public class User implements java.io.Serializable {
     public String getPassword() {
         return password;
     }
+    
+    @OneToMany(cascade = CascadeType.ALL, mappedBy="pk.user", fetch=FetchType.LAZY)
+    public Set<UserPermission> getUserPermissions() {
+        return userPermissions;
+    }
+    
+    public void setUserPermissions(Set<UserPermission> userPermissions) {
+        this.userPermissions = userPermissions;
+    }
 
     @Override
     public String toString() {
@@ -114,7 +127,7 @@ public class User implements java.io.Serializable {
         this.roles = roles;
     }
 
-    @Column(name="enabled", nullable = false, columnDefinition = "TINYINT", length = 1)
+    @Column(nullable = false, columnDefinition = "TINYINT", length = 1)
     public boolean isEnabled() {
         return enabled;
     }
@@ -134,14 +147,46 @@ public class User implements java.io.Serializable {
     }
 
     @Transient
-    public Set<Permission> getPermissions() {
-        final Set<Permission> rv = new HashSet<Permission>();
-        getRoles().stream().forEach(r->rv.addAll(r.getPermissions()));
+    public Set<AssignedPermission> getPermissions() {
+        final Set<AssignedPermission> rv = new HashSet<AssignedPermission>();
+        getRoles().stream().forEach(r->rv.addAll(r.getRolePermissions()));
+        rv.addAll(getUserPermissions());
         return rv;
     }
 
     @Transient
     public Set<String> getEffectivePermissions() {
         return PermissionsHelper.getEffectivePermissions(getPermissions());
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
+        result = prime * result + ((username == null) ? 0 : username.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        User other = (User) obj;
+        if (id == null) {
+            if (other.id != null)
+                return false;
+        } else if (!id.equals(other.id))
+            return false;
+        if (username == null) {
+            if (other.username != null)
+                return false;
+        } else if (!username.equals(other.username))
+            return false;
+        return true;
     }
 }

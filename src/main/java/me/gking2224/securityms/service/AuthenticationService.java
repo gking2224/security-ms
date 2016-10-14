@@ -6,7 +6,7 @@ import me.gking2224.securityms.client.Authentication;
 
 public interface AuthenticationService {
 
-    String authenticate(String username, String password) throws AuthenticationException;
+    Authentication authenticate(String username, String password) throws AuthenticationException;
 
     Authentication validate(String key) throws AuthenticationException;
 

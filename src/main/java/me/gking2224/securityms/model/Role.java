@@ -2,6 +2,7 @@ package me.gking2224.securityms.model;
 
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -11,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -30,7 +32,7 @@ public class Role implements java.io.Serializable {
     
     private String name;
     
-    private Set<Permission> permissions;
+    private Set<RolePermission> rolePermissions;
     
     public Role() {
         super();
@@ -71,17 +73,12 @@ public class Role implements java.io.Serializable {
         return String.format("Role [id=%s, name=%s]", id, name);
     }
 
-    @ManyToMany(fetch=FetchType.LAZY)
-    @JoinTable(
-            name="RolePermission",
-            joinColumns={@JoinColumn(name="role_id")},
-            inverseJoinColumns={@JoinColumn(name="permission_id")}
-    )
-    public Set<Permission> getPermissions() {
-        return permissions;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy="pk.role", fetch=FetchType.LAZY)
+    public Set<RolePermission> getRolePermissions() {
+        return rolePermissions;
     }
 
-    public void setPermissions(Set<Permission> permissions) {
-        this.permissions = permissions;
+    public void setRolePermissions(Set<RolePermission> rolePermissions) {
+        this.rolePermissions = rolePermissions;
     }
 }

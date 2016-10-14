@@ -19,7 +19,6 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import me.gking2224.common.web.View;
 import me.gking2224.securityms.client.Authentication;
-import me.gking2224.securityms.client.Token;
 import me.gking2224.securityms.client.TokenRequest;
 import me.gking2224.securityms.service.AuthenticationService;
 
@@ -32,13 +31,14 @@ public class SecurityController {
     @Autowired
     private AuthenticationService authService;
 
-    @RequestMapping(value="/createToken", method=RequestMethod.POST, consumes=MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Token> createToken(@RequestBody TokenRequest tokenRequest) {
+    @RequestMapping(value="/authenticate", method=RequestMethod.POST, consumes=MediaType.APPLICATION_JSON_VALUE)
+    @JsonView(View.Summary.class)
+    public ResponseEntity<Authentication> createToken(@RequestBody TokenRequest tokenRequest) {
 
-        String token = authService.authenticate(tokenRequest.getUsername(), tokenRequest.getPassword());
+        Authentication auth = authService.authenticate(tokenRequest.getUsername(), tokenRequest.getPassword());
         
         HttpHeaders headers = new HttpHeaders();
-        return new ResponseEntity<Token>(new Token(token), headers, HttpStatus.OK);
+        return new ResponseEntity<Authentication>(auth, headers, HttpStatus.OK);
     }
 
     @RequestMapping(value="/validate", method=RequestMethod.GET)

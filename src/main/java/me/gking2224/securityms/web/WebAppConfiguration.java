@@ -1,12 +1,9 @@
 package me.gking2224.securityms.web;
 
-import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
-import org.springframework.web.servlet.DispatcherServlet;
-import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
@@ -34,18 +31,5 @@ public class WebAppConfiguration extends WebMvcConfigurationSupport {
             }
             
         };
-    }
-    @Override
-    public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer){
-      configurer.enable();
-    }
-
-    @Bean
-    public ServletRegistrationBean foo() {
-        DispatcherServlet dispatcherServlet = new DispatcherServlet();   
-        dispatcherServlet.setApplicationContext(getApplicationContext());
-        ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean(dispatcherServlet, "/*");
-        servletRegistrationBean.setName("dispatcher");
-        return servletRegistrationBean;
     }
 }

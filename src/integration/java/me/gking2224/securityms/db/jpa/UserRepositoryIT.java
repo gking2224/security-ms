@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import me.gking2224.securityms.TestConfiguration;
 import me.gking2224.securityms.model.Permission;
 import me.gking2224.securityms.model.Role;
+import me.gking2224.securityms.model.RolePermission;
 import me.gking2224.securityms.model.User;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -57,13 +58,13 @@ public class UserRepositoryIT {
         Role role = roles.iterator().next();
         assertEquals("Test Role",  role.getName());
         
-        Set<Permission> perms = role.getPermissions();
+        Set<RolePermission> perms = role.getRolePermissions();
         assertNotNull(perms);
         assertEquals(1, perms.size());
-        Permission perm = perms.iterator().next();
-        assertEquals("Parent Permission", perm.getName());
+        RolePermission perm = perms.iterator().next();
+        assertEquals("Parent Permission", perm.getPermission().getName());
         
-        Set<Permission> childPerms = perm.getIncludes();
+        Set<Permission> childPerms = perm.getPermission().getIncludes();
         assertNotNull(childPerms);
         assertEquals(1, childPerms.size());
         Permission childPerm = childPerms.iterator().next();

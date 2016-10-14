@@ -20,9 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import me.gking2224.common.utils.DurationFormatter;
 import me.gking2224.securityms.client.Authentication;
 import me.gking2224.securityms.client.TokenExpiredException;
-import me.gking2224.securityms.db.jpa.PermissionRepository;
-import me.gking2224.securityms.db.jpa.UserRepository;
-import me.gking2224.securityms.model.Permission;
+import me.gking2224.securityms.db.dao.UserDao;
 import me.gking2224.securityms.model.Token;
 import me.gking2224.securityms.model.User;
 
@@ -40,18 +38,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public PasswordEncoder passwordEncoder;
     
     @Autowired
-    private UserRepository repository;
-    
-    @Autowired
-    private PermissionRepository permissionRepo;
+    private UserDao userDao;
     
     private Clock clock = Clock.systemDefaultZone();
     
     private Duration timeoutPeriod = DurationFormatter.getInstance().apply("30m");
     
     @Override
-    public String authenticate(String username, String password) throws AuthenticationException {
-        User u = repository.findByUsername(username);
+    public Authentication authenticate(final String username, final String password) throws AuthenticationException {
+        User u = userDao.findByUsername(username);
         
 //        for (int i = 0; i < 5; i++) {
 //            logger.debug(passwordEncoder.encode(password));
@@ -68,30 +63,34 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Token<?> token = tokenService.newToken()
                 .forUser(username)
                 .withExpiry(getTimeout())
-                .withPermissions(u.getPermissions().stream().map(Permission::getId).collect(Collectors.toSet()))
                 .buildToken();
         
-        return tokenService.allocateToken(token).getKey();
+        org.springframework.security.core.token.Token allocateToken = tokenService.allocateToken(token);
+        Authentication rv = createAuthentication(u, token, allocateToken.getKey());
+        rv.setAuthenticated(true);
+        return rv;
     }
     
     @Override
     public Authentication validate(String key) throws AuthenticationException {
-        
         org.springframework.security.core.token.Token t = tokenService.verifyToken(key);
-        
         Token<?> token = tokenService.tokenFromString(t.getExtendedInformation());
+
+        User u = userDao.findByUsername(token.getUsername());
+        Authentication rv = createAuthentication(u, token, key);
+        rv.setAuthenticated(true);
+        return rv;
+    }
+
+    protected Authentication createAuthentication(final User user, final Token<?> token, final String key) {
         
-        Set<Permission> permissions = token.getPermissions().stream()
-                .map(i->permissionRepo.findOne(i))
-                .collect(Collectors.toSet()); 
-        Set<String> perms = PermissionsHelper.getEffectivePermissions(permissions);
+        Set<String> perms = user.getEffectivePermissions();
         
-        User user = repository.findByUsername(token.getUsername());
         checkUserAccount(user);
         checkTokenExpiry(token);
         
         Set<String> roles = user.getRoles().stream().map(r -> r.getName()).collect(Collectors.toSet());
-        return new Authentication(user.getUserDetails(), roles, perms, token.getTimeout());
+        return new Authentication(key, user.getUserDetails(), roles, perms, token.getTimeout());
     }
 
     private void checkTokenExpiry(Token<?> token) {

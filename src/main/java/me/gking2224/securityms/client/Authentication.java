@@ -7,14 +7,12 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.springframework.security.core.context.SecurityContext;
-
 import com.fasterxml.jackson.annotation.JsonView;
 
 import me.gking2224.common.web.View;
 
 
-public class Authentication implements org.springframework.security.core.Authentication, SecurityContext {
+public class Authentication implements org.springframework.security.core.Authentication {
     
     /**
      * 
@@ -24,6 +22,7 @@ public class Authentication implements org.springframework.security.core.Authent
     private static final String PERMISSION_PREFIX = "Permission:";
     private static final String ROLE_PREFIX = "ROLE_";
     
+    private String key;
     private UserDetails user;
     private Set<GrantedAuthority> authorities = new HashSet<GrantedAuthority>();
     private Set<String> roles = new HashSet<String>();
@@ -36,18 +35,20 @@ public class Authentication implements org.springframework.security.core.Authent
     }
     
     public Authentication(
+            final String key,
             final UserDetails user,
             final Set<String> roles,
             final Set<String> permissions,
             final Instant expiry
     ) {
+        this.key = key;
         this.user = user;
         setRoles(roles);
         setPermissions(permissions);
         setExpiry(expiry.toEpochMilli());
-        this.isAuthenticated = true;
     }
-    
+
+    @JsonView(View.Summary.class)
     public Long getExpiry() {
         return expiry;
     }
@@ -63,10 +64,15 @@ public class Authentication implements org.springframework.security.core.Authent
 
     public void setPermissions(Set<String> permissions) {
         clearPermissions();
-        this.permissions = Collections.unmodifiableSet(permissions);
-        this.authorities.addAll(permissions.stream()
-                .map(p -> new GrantedAuthority(PERMISSION_PREFIX+p))
-                .collect(Collectors.toSet()));
+        if (permissions == null) {
+            this.permissions = Collections.emptySet();
+        }
+        else {
+            this.permissions = Collections.unmodifiableSet(permissions);
+            this.authorities.addAll(permissions.stream()
+                    .map(p -> new GrantedAuthority(PERMISSION_PREFIX+p))
+                    .collect(Collectors.toSet()));
+        }
     }
 
     private void clearPermissions() { clearBy(PERMISSION_PREFIX); }
@@ -84,25 +90,32 @@ public class Authentication implements org.springframework.security.core.Authent
 
     public void setRoles(Set<String> roles) {
         clearRoles();
-        this.roles = Collections.unmodifiableSet(roles);
-        this.authorities.addAll(roles.stream()
-                .map(r -> new GrantedAuthority(ROLE_PREFIX+r))
-                .collect(Collectors.toSet()));
+        if (roles == null) {
+            this.roles = Collections.emptySet();
+        }
+        else {
+            this.roles = Collections.unmodifiableSet(roles);
+            this.authorities.addAll(roles.stream()
+                    .map(r -> new GrantedAuthority(ROLE_PREFIX+r))
+                    .collect(Collectors.toSet()));
+        }
     }
 
     @Override
+    @JsonView(View.Summary.class)
     public String getName() {
         return user.getUsername();
     }
-
+    
     @Override
     public Collection<? extends org.springframework.security.core.GrantedAuthority> getAuthorities() {
         return authorities;
     }
 
     @Override
+    @JsonView(View.Summary.class)
     public Object getCredentials() {
-        return null;
+        return key;
     }
 
     @Override
@@ -194,16 +207,6 @@ public class Authentication implements org.springframework.security.core.Authent
         public String toString() {
             return String.format("[%s]", authority);
         }
-    }
-
-    @Override
-    public org.springframework.security.core.Authentication getAuthentication() {
-        return this;
-    }
-
-    @Override
-    public void setAuthentication(org.springframework.security.core.Authentication authentication) {
-        throw new UnsupportedOperationException();
     }
 
 }

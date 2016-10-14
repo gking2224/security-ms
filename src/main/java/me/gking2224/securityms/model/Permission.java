@@ -36,8 +36,6 @@ public class Permission implements java.io.Serializable {
     
     private Permission parent;
     
-    private boolean enabled = true;
-    
     public Permission() {
         super();
     }
@@ -129,14 +127,5 @@ public class Permission implements java.io.Serializable {
     @Override
     public String toString() {
         return String.format("Permission [id=%s, name=%s, includes=%s]", id, name, includes);
-    }
-
-    @Column(name="enabled", nullable = false, columnDefinition = "TINYINT", length = 1)
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
     }
 }

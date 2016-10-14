@@ -33,7 +33,7 @@ public class TokenTest {
         String username = "username";
         Instant timeout = Instant.now();
         
-        DefaultToken t = new DefaultToken().username(username).timeout(timeout).permissions(permissions);
+        DefaultToken t = new DefaultToken().username(username).timeout(timeout);
         
         
         ByteArrayOutputStream bos = new ByteArrayOutputStream(1024);
@@ -51,7 +51,6 @@ public class TokenTest {
         
         assertEquals(username, t2.getUsername());
         assertEquals(timeout, t2.getTimeout());
-        assertEquals(permissions, t2.getPermissions());
     }
 
 }

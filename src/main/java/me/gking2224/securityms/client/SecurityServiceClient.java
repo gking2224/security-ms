@@ -66,9 +66,9 @@ public class SecurityServiceClient {
         return baseUrl;
     }
 
-    protected String getCreateTokenUrl() {
+    protected String getAuthenticateUrl() {
         if (createTokenUrl == null) {
-            createTokenUrl = String.format("%s/createToken", getBaseUrl());
+            createTokenUrl = String.format("%s/authenticate", getBaseUrl());
         }
         return createTokenUrl;
     }
@@ -80,7 +80,7 @@ public class SecurityServiceClient {
         return String.format("%s?securityToken=%s", validateUrl, token);
     }
     
-    public String createToken(final String username, final String password) {
+    public Authentication authenticate(final String username, final String password) {
         TokenRequest rq = new TokenRequest(username, password);
 
         HttpHeaders headers = new HttpHeaders();
@@ -89,8 +89,8 @@ public class SecurityServiceClient {
 
         HttpEntity<TokenRequest> entity = new HttpEntity<TokenRequest>(rq, headers);
 
-        ResponseEntity<Token> token = getRestTemplate().exchange(getCreateTokenUrl(), POST, entity, Token.class);
-        return (String)token.getBody().getToken();
+        ResponseEntity<Authentication> token = getRestTemplate().exchange(getAuthenticateUrl(), POST, entity, Authentication.class);
+        return (Authentication)token.getBody();
     }
     public Authentication validate(final String token) {
 

@@ -11,7 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -29,14 +31,12 @@ public class TokenProcessingFilter extends OncePerRequestFilter {
     @Autowired(required=true)
     private SecurityServiceClient serviceClient;
     
-//    @Autowired
-//    private SecurityErrorHandler errorHandler;
-
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         String token = request.getHeader(TOKEN_HEADER);
-        if (token != null) {
+        SecurityContext auth = SecurityContextHolder.getContext();
+        if (auth != null && auth.getAuthentication() == null && token != null) {
             validate(token);
         }
         chain.doFilter(request, response);
@@ -54,7 +54,9 @@ public class TokenProcessingFilter extends OncePerRequestFilter {
     }
 
     private void storeAuthentication(Authentication auth) {
-        SecurityContextHolder.setContext(auth);
+        SecurityContext sc = new SecurityContextImpl();
+        sc.setAuthentication(auth);
+        SecurityContextHolder.setContext(sc);
     }
 
     @Override

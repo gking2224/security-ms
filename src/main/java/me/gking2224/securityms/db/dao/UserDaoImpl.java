@@ -14,13 +14,18 @@ import me.gking2224.securityms.model.User;
 public class UserDaoImpl extends AbstractDaoImpl<User, Long> implements UserDao {
 
     @Autowired
-    protected UserRepository userRepository;
+    protected UserRepository repository;
     
     public UserDaoImpl() {
     }
 
     @Override
+    public User findByUsername(String username) {
+        return repository.findByUsername(username);
+    }
+    
+    @Override
     protected JpaRepository<User, Long> getRepository() {
-        return userRepository;
+        return repository;
     }
 }

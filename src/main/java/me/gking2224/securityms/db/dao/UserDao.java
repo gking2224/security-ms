@@ -5,4 +5,6 @@ import me.gking2224.securityms.model.User;
 
 public interface UserDao extends CrudDao<User, Long>{
 
+    User findByUsername(String username);
+
 }
