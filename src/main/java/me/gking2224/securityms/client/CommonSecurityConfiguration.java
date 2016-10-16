@@ -15,7 +15,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.context.SecurityContextPersistenceFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.web.client.RestTemplate;
 
 import me.gking2224.securityms.common.SecurityErrorHandler;
@@ -95,16 +95,15 @@ public class CommonSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        http.addFilterAfter(tokenFilter, SecurityContextPersistenceFilter.class);
+        http.addFilterBefore(tokenFilter, BasicAuthenticationFilter.class);
         http.authorizeRequests()
             .antMatchers("/public/**").permitAll()
-//            .antMatchers(HttpMethod.POST, "/logout").permitAll()
             .and().exceptionHandling().accessDeniedHandler(errorHandler);
 
         if (httpSecurityConfigurer != null) {
             httpSecurityConfigurer.configure(http);
         }
-        http.csrf().disable(); // spring mvc handles csrf
+        http.cors();
         http.httpBasic().authenticationEntryPoint(authEntryPoint);
     }
     

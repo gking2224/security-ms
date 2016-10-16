@@ -53,4 +53,12 @@ public class SecurityController {
         headers.setCacheControl(String.format("max-age=%d", (auth.getExpiry() - Instant.now().toEpochMilli()) / 1000));
         return new ResponseEntity<Authentication>(auth, headers, HttpStatus.OK);
     }
+
+    @RequestMapping(value="/validate", method=RequestMethod.OPTIONS)
+    public ResponseEntity<Void> validatePreFlight(
+            @RequestParam String securityToken
+    ) {
+        HttpHeaders headers = new HttpHeaders();
+        return new ResponseEntity<Void>(headers, HttpStatus.OK);
+    }
 }

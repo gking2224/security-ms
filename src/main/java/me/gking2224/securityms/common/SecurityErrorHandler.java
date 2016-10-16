@@ -61,12 +61,12 @@ public class SecurityErrorHandler implements org.springframework.security.web.ac
 
     @ExceptionHandler(TokenExpiredException.class)
     public ResponseEntity<ErrorResponse> tokenExpired() {
-        return responseEntity(HttpStatus.FORBIDDEN, "Token expired");
+        return responseEntity(HttpStatus.UNAUTHORIZED, "Token expired");
     }
 
     @ExceptionHandler(InvalidTokenException.class)
     public ResponseEntity<ErrorResponse> invalidToken() {
-        return responseEntity(HttpStatus.FORBIDDEN, "Invalid token");
+        return responseEntity(HttpStatus.BAD_REQUEST, "Invalid token");
     }
 
     @ExceptionHandler(AuthenticationException.class)

@@ -54,6 +54,7 @@ environments {
         security {
             encryptionSalt = RandomString.asHex(24)
             encryptionPassword = "${project.encryptionPwd}"
+            allowedCorsOrigins="${project.allowedCorsOrigins}"
         }
         jdwpPort = Integer.parseInt(project.basePort)+1
     }
@@ -65,7 +66,6 @@ environments {
             username = "${project.localDatabaseUsername}"
         }
         webapp {
-            contextPath="/security-local"
             httpPort=project.basePort
         }
     }
@@ -78,7 +78,6 @@ environments {
             username = "${project.localDatabaseUsername}"
         }
         webapp {
-            contextPath="/security-local"
             httpPort=project.basePort
         }
     }
@@ -90,7 +89,6 @@ environments {
             username = "${project.devDatabaseUsername}"
         }
         webapp {
-            contextPath="/security-dev"
             httpPort=Integer.parseInt(project.basePort)+20
         }
     }
@@ -102,7 +100,6 @@ environments {
             username = "${project.testDatabaseUsername}"
         }
         webapp {
-            contextPath="/security-test"
             httpPort=Integer.parseInt(project.basePort)+40
         }
     }
