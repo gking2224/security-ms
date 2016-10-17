@@ -1,11 +1,19 @@
 package me.gking2224.securityms.client;
 
+import static me.gking2224.securityms.client.SecurityServiceClient.KEEP_TOKEN_ALIVE_TOPIC;
+
+import javax.jms.Topic;
+
+import org.apache.activemq.command.ActiveMQTopic;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -22,7 +30,7 @@ import me.gking2224.securityms.common.SecurityErrorHandler;
 
 @EnableWebSecurity
 @ComponentScan({"me.gking2224.securityms.client", "me.gking2224.securityms.common"})
-@PropertySource("/security.properties")
+@PropertySource(value="/security.properties", ignoreResourceNotFound=true)
 public class CommonSecurityConfiguration extends WebSecurityConfigurerAdapter {
     
     @Value("${securityService.host}")
@@ -34,10 +42,10 @@ public class CommonSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Value("${securityService.context}")
     private String context;
     
-    @Autowired(required=true)
+    @Autowired
     private SecurityServiceClient serviceClient;
 
-    @Autowired(required=true)
+    @Autowired
     private TokenProcessingFilter tokenFilter;
     
     @Autowired(required=false)
@@ -53,12 +61,19 @@ public class CommonSecurityConfiguration extends WebSecurityConfigurerAdapter {
     private NonHtmlBasicAuthenticationEntryPoint authEntryPoint;
 
     @Bean
-    public SecurityServiceClient securityClient(final RestTemplate restTemplate) {
+    @DependsOn(KEEP_TOKEN_ALIVE_TOPIC)
+    public SecurityServiceClient securityClient(
+            final RestTemplate restTemplate,
+            @Autowired @Qualifier("pubSubTemplate") final JmsTemplate pubSubTemplate,
+            @Qualifier(KEEP_TOKEN_ALIVE_TOPIC) Topic keepTokenAliveTopic
+    ) {
         SecurityServiceClient client = new SecurityServiceClient();
         client.setHost(host);
         client.setPort(port);
         client.setContext(context);
         client.setRestTemplate(restTemplate);
+        client.setJmsTemplate(pubSubTemplate);
+        client.setKeepTokenAliveTopic(keepTokenAliveTopic);
         return client;
     }
 
@@ -113,5 +128,10 @@ public class CommonSecurityConfiguration extends WebSecurityConfigurerAdapter {
         filterRegistrationBean.setFilter(filter);
         filterRegistrationBean.setEnabled(false);
         return filterRegistrationBean;
+    }
+    
+    @Bean(KEEP_TOKEN_ALIVE_TOPIC)
+    public Topic keepTokenAlive() {
+        return new ActiveMQTopic(KEEP_TOKEN_ALIVE_TOPIC);
     }
 }

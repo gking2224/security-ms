@@ -13,4 +13,7 @@ public class InvalidTokenException extends AuthenticationException {
         super(msg, t);
     }
 
+    public InvalidTokenException(String msg) {
+        this(msg, null);
+    }
 }

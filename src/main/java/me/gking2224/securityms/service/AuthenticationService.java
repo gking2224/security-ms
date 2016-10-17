@@ -10,4 +10,8 @@ public interface AuthenticationService {
 
     Authentication validate(String key) throws AuthenticationException;
 
+    void invalidate(String securityToken);
+    
+    void keepTokenAlive(String token) throws AuthenticationException;
+
 }

@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextImpl;
@@ -51,6 +52,14 @@ public class TokenProcessingFilter extends OncePerRequestFilter {
             throw new ErrorResponseException(
                     new ErrorResponse(HttpStatus.SERVICE_UNAVAILABLE.value(), "Security Service not available"));
         }
+        catch (AuthenticationException e) {
+            removeSecurityContext();
+            throw e;
+        }
+    }
+
+    private void removeSecurityContext() {
+        SecurityContextHolder.getContext().setAuthentication(null);
     }
 
     private void storeAuthentication(Authentication auth) {

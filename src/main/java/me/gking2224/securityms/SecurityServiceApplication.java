@@ -20,13 +20,26 @@ import org.springframework.web.context.support.StandardServletEnvironment;
 import me.gking2224.common.CommonConfiguration;
 import me.gking2224.common.jmx.CommonJmxConfiguration;
 import me.gking2224.securityms.aop.AopConfiguration;
+import me.gking2224.securityms.batch.BatchConfiguration;
 import me.gking2224.securityms.db.DatabaseConfiguration;
 import me.gking2224.securityms.db.EmbeddedDatabaseConfiguration;
+import me.gking2224.securityms.jms.MessagingConfiguration;
+import me.gking2224.securityms.security.SecurityConfiguration;
 import me.gking2224.securityms.web.WebAppConfiguration;
 
 @Configuration
 @ComponentScan(basePackages={"me.gking2224.securityms.service", "me.gking2224.securityms.model", "me.gking2224.securityms.common"})
-@Import({WebAppConfiguration.class, DatabaseConfiguration.class, EmbeddedDatabaseConfiguration.class, CommonConfiguration.class, CommonJmxConfiguration.class, AopConfiguration.class, SecurityConfiguration.class})
+@Import({
+    WebAppConfiguration.class,
+    DatabaseConfiguration.class,
+    BatchConfiguration.class,
+    EmbeddedDatabaseConfiguration.class,
+    CommonConfiguration.class,
+    CommonJmxConfiguration.class,
+    AopConfiguration.class,
+    SecurityConfiguration.class,
+    MessagingConfiguration.class
+})
 public class SecurityServiceApplication extends SpringBootServletInitializer {
     
     private ServletContext servletContext;

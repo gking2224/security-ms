@@ -1,4 +1,6 @@
-package me.gking2224.securityms;
+package me.gking2224.securityms.security;
+
+import static me.gking2224.securityms.client.SecurityServiceClient.KEEP_TOKEN_ALIVE_TOPIC;
 
 import java.net.NetworkInterface;
 import java.nio.ByteBuffer;
@@ -7,9 +9,13 @@ import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.util.Enumeration;
 
+import javax.jms.Topic;
+
+import org.apache.activemq.command.ActiveMQTopic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -23,6 +29,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 //@EnableWebSecurity(debug=true)
 @PropertySource("/security.properties")
+@ComponentScan("me.gking2224.securityms.security")
 public class SecurityConfiguration {//extends WebSecurityConfigurerAdapter {
     
     @Value("${encryptionSalt}")
@@ -73,6 +80,11 @@ public class SecurityConfiguration {//extends WebSecurityConfigurerAdapter {
         rv.setSecureRandom(new SecureRandom(getBytes(encryptionSalt)));
         rv.setServerSecret(encryptionPassword);
         return rv;
+    }
+    
+    @Bean(KEEP_TOKEN_ALIVE_TOPIC)
+    public Topic keepTokenAlive() {
+        return new ActiveMQTopic(KEEP_TOKEN_ALIVE_TOPIC);
     }
     
     @Bean

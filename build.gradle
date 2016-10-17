@@ -65,6 +65,7 @@ ext {
       springVersion = "4.3.1.RELEASE"
       springDataVersion = "1.10.2.RELEASE"
       springBootVersion = "1.4.1.RELEASE"
+      springJmsVersion = "4.3.3.RELEASE"
       springSecurityVersion = "4.1.3.RELEASE"
       jacksonVersion = "2.8.0"
       freemarkerVersion = "2.3.23"
@@ -103,7 +104,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot:$springBootVersion")
     
     
-    // SPRING SECURITY
+    // SECURITY
     compile("org.springframework.security:spring-security-core:$springSecurityVersion")
     compile("org.springframework.security:spring-security-config:$springSecurityVersion")
     compile("org.springframework.security:spring-security-web:$springSecurityVersion")
@@ -111,10 +112,6 @@ dependencies {
     
     // SPRING FRAMEWORK
     compile("org.springframework:spring-core:$springVersion")
-    compile("org.springframework:spring-web:$springVersion")
-    compile("org.springframework.data:spring-data-jpa:$springDataVersion")
-    compile("org.springframework:spring-webmvc:$springVersion")
-    compile("org.springframework:spring-context-support:$springVersion")
     
     
     // AOP
@@ -125,6 +122,9 @@ dependencies {
 
     
     // MVC
+    compile("org.springframework:spring-context-support:$springVersion")
+    compile("org.springframework:spring-web:$springVersion")
+    compile("org.springframework:spring-webmvc:$springVersion")
     compile("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     compile("com.fasterxml.jackson.dataformat:jackson-dataformat-xml:$jacksonVersion")
     compile group: 'org.apache.velocity', name: 'velocity', version: '1.7'
@@ -134,12 +134,18 @@ dependencies {
     
 
     // DATABASE
+    compile("org.springframework.data:spring-data-jpa:$springDataVersion")
     compile("org.springframework:spring-jdbc:$springVersion")
     compile "org.springframework:spring-orm:$springVersion"
     compile "org.hibernate:hibernate-core:$hibernateVersion"
     compile ('org.apache.commons:commons-dbcp2:2.1.1')
     runtime("mysql:mysql-connector-java:$mysqlVersion")
     runtime "mysql:mysql-connector-mxj:5.0.12"
+    
+    
+    // MESSAGING
+    compile group: 'org.springframework', name: 'spring-jms', version: springJmsVersion
+//    compile("org.apache.activemq:activemq-core:5.7.0")
     
     
     // UTILS
@@ -236,6 +242,7 @@ dependencies {
     clientlib "org.springframework.security:spring-security-core:$springSecurityVersion"
     clientlib("org.springframework.security:spring-security-web:$springSecurityVersion")
     clientlib("org.springframework.security:spring-security-config:$springSecurityVersion")
+    clientlib("org.springframework:spring-jms:$springJmsVersion")
     clientlib "org.springframework:spring-web:$springVersion"
     clientlib "me.gking2224:gk-microservice-utils:0.0.1-SNAPSHOT"
 }

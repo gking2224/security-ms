@@ -1,6 +1,5 @@
 package me.gking2224.securityms.client;
 
-import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -39,13 +38,13 @@ public class Authentication implements org.springframework.security.core.Authent
             final UserDetails user,
             final Set<String> roles,
             final Set<String> permissions,
-            final Instant expiry
+            final Long expiry
     ) {
         this.key = key;
         this.user = user;
         setRoles(roles);
         setPermissions(permissions);
-        setExpiry(expiry.toEpochMilli());
+        setExpiry(expiry);
     }
 
     @JsonView(View.Summary.class)

@@ -14,9 +14,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.web.csrf.InvalidCsrfTokenException;
+import org.springframework.security.web.csrf.MissingCsrfTokenException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -25,6 +28,7 @@ import me.gking2224.common.web.ResponseErrorWriter;
 import me.gking2224.securityms.client.InvalidTokenException;
 import me.gking2224.securityms.client.ServiceUnavailableException;
 import me.gking2224.securityms.client.TokenExpiredException;
+import me.gking2224.securityms.client.TokenInvalidatedException;
 
 @ControllerAdvice
 @Profile("web")
@@ -41,7 +45,17 @@ public class SecurityErrorHandler implements org.springframework.security.web.ac
 
     @ExceptionHandler({BadCredentialsException.class, UsernameNotFoundException.class})
     public ResponseEntity<ErrorResponse> cannotAuthenticate() {
-        return responseEntity(HttpStatus.FORBIDDEN, "Cannot authenticate");
+        return responseEntity(HttpStatus.UNAUTHORIZED, "Cannot authenticate");
+    }
+
+    @ExceptionHandler(InvalidCsrfTokenException.class)
+    public ResponseEntity<ErrorResponse> invalidCsrfToken() {
+        return responseEntity(HttpStatus.FORBIDDEN, "Invalid Csrf Token");
+    }
+
+    @ExceptionHandler(MissingCsrfTokenException.class)
+    public ResponseEntity<ErrorResponse> missingCsrfToken() {
+        return responseEntity(HttpStatus.FORBIDDEN, "Missing Csrf Token");
     }
 
     @ExceptionHandler(AccessDeniedException.class)
@@ -69,9 +83,19 @@ public class SecurityErrorHandler implements org.springframework.security.web.ac
         return responseEntity(HttpStatus.BAD_REQUEST, "Invalid token");
     }
 
+    @ExceptionHandler(DisabledException.class)
+    public ResponseEntity<ErrorResponse> disabled() {
+        return responseEntity(HttpStatus.UNAUTHORIZED, "Unable to log on. Please contact your system administrator.");
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> tokenInvalidated(final TokenInvalidatedException e) {
+        return responseEntity(HttpStatus.UNAUTHORIZED, e.getMessage());
+    }
+
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ErrorResponse> genericError() {
-        return responseEntity(HttpStatus.FORBIDDEN, "Authentication error");
+        return responseEntity(HttpStatus.UNAUTHORIZED, "Authentication error");
     }
 
     private ResponseEntity<ErrorResponse> responseEntity(final HttpStatus status, final String description) {

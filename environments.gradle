@@ -56,6 +56,13 @@ environments {
             encryptionPassword = "${project.encryptionPwd}"
             allowedCorsOrigins="${project.allowedCorsOrigins}"
         }
+        jms {
+            activeMqHost ="${project.activeMqHost}"
+            activeMqPort ="${project.activeMqPort}"
+        }
+        batch {
+            baseDir="/batch/default"
+        }
         jdwpPort = Integer.parseInt(project.basePort)+1
     }
     env("local") {

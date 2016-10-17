@@ -4,6 +4,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.security.crypto.encrypt.BytesEncryptor;
 
+import me.gking2224.securityms.security.SecurityConfiguration;
+
 public class EncryptorTest {
 
     SecurityConfiguration config = new SecurityConfiguration();
