@@ -67,8 +67,9 @@ environments {
     }
     env("local") {
         database {
+            port = 13306
             name = "${project.databaseBaseName}_lcl"
-            host = "${project.localDatabaseHost}"
+            host = "127.0.0.1"//"${project.localDatabaseHost}"
             password = "${project.localDatabasePassword}"
             username = "${project.localDatabaseUsername}"
         }

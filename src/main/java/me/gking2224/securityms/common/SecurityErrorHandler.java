@@ -15,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
-import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.csrf.InvalidCsrfTokenException;
@@ -24,7 +23,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import me.gking2224.common.client.ErrorResponse;
-import me.gking2224.common.web.ResponseErrorWriter;
+import me.gking2224.common.client.ResponseErrorWriter;
 import me.gking2224.securityms.client.InvalidTokenException;
 import me.gking2224.securityms.client.ServiceUnavailableException;
 import me.gking2224.securityms.client.TokenExpiredException;
@@ -43,72 +42,73 @@ public class SecurityErrorHandler implements org.springframework.security.web.ac
     public SecurityErrorHandler() {
     }
 
-    @ExceptionHandler({BadCredentialsException.class, UsernameNotFoundException.class})
-    public ResponseEntity<ErrorResponse> cannotAuthenticate() {
-        return responseEntity(HttpStatus.UNAUTHORIZED, "Cannot authenticate");
-    }
-
-    @ExceptionHandler(InvalidCsrfTokenException.class)
-    public ResponseEntity<ErrorResponse> invalidCsrfToken() {
-        return responseEntity(HttpStatus.FORBIDDEN, "Invalid Csrf Token");
-    }
-
-    @ExceptionHandler(MissingCsrfTokenException.class)
-    public ResponseEntity<ErrorResponse> missingCsrfToken() {
-        return responseEntity(HttpStatus.FORBIDDEN, "Missing Csrf Token");
-    }
-
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponse> accessDenied() {
         return responseEntity(HttpStatus.FORBIDDEN, "Access denied");
     }
 
-    @ExceptionHandler(ServiceUnavailableException.class)
-    public ResponseEntity<ErrorResponse> serviceUnavailable() {
-        return responseEntity(HttpStatus.SERVICE_UNAVAILABLE, "Security service unavailable");
-    }
-
-    @ExceptionHandler(InternalAuthenticationServiceException.class)
-    public ResponseEntity<ErrorResponse> internalErrr() {
-        return responseEntity(HttpStatus.INTERNAL_SERVER_ERROR, "Internal authentication error");
-    }
-
-    @ExceptionHandler(TokenExpiredException.class)
-    public ResponseEntity<ErrorResponse> tokenExpired() {
-        return responseEntity(HttpStatus.UNAUTHORIZED, "Token expired");
-    }
-
-    @ExceptionHandler(InvalidTokenException.class)
-    public ResponseEntity<ErrorResponse> invalidToken() {
-        return responseEntity(HttpStatus.BAD_REQUEST, "Invalid token");
-    }
-
-    @ExceptionHandler(DisabledException.class)
-    public ResponseEntity<ErrorResponse> disabled() {
-        return responseEntity(HttpStatus.UNAUTHORIZED, "Unable to log on. Please contact your system administrator.");
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<ErrorResponse> tokenInvalidated(final TokenInvalidatedException e) {
-        return responseEntity(HttpStatus.UNAUTHORIZED, e.getMessage());
-    }
-
     @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<ErrorResponse> genericError() {
-        return responseEntity(HttpStatus.UNAUTHORIZED, "Authentication error");
-    }
-
-    private ResponseEntity<ErrorResponse> responseEntity(final HttpStatus status, final String description) {
-        return new ResponseEntity<ErrorResponse>(errorResponse(status, description), status);
-    }
-
-    private ErrorResponse errorResponse(final HttpStatus status, final String description) {
-        return new ErrorResponse(status.value(), description);
+    public ResponseEntity<ErrorResponse> genericError(final AuthenticationException e) {
+        return responseEntity(errorResponse(e));
     }
     
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response,
-            AccessDeniedException accessDeniedException) throws IOException, ServletException {
-        errorWriter.writeError(request, response, errorResponse(HttpStatus.FORBIDDEN, "Access denied"));
+            AccessDeniedException e) throws IOException, ServletException {
+        errorWriter.writeError(request, response, errorResponse(e));
+    }
+
+    public ErrorResponse errorResponse(Throwable t) {
+        HttpStatus status = HttpStatus.UNAUTHORIZED;
+        String message = null;
+        Class<? extends Throwable> clazz = t.getClass();
+        if (BadCredentialsException.class.isAssignableFrom(clazz) ||
+                UsernameNotFoundException.class.isAssignableFrom(clazz))
+        {
+            message = "Cannot authenticate";
+        }
+        else if (DisabledException.class.isAssignableFrom(clazz)) {
+            message = "Unable to log on. Please contact your system administrator.";
+        }
+        else if (TokenInvalidatedException.class.isAssignableFrom(clazz)) {
+            message = t.getMessage();
+        }
+        else if (InvalidTokenException.class.isAssignableFrom(clazz)) {
+            status = HttpStatus.BAD_REQUEST;
+            message = "Invalid token";
+        }
+        else if (TokenExpiredException.class.isAssignableFrom(clazz)) {
+            message = "Session expired";
+        }
+        else if (ServiceUnavailableException.class.isAssignableFrom(clazz)) {
+            message = "Security service unavailable";
+        }
+        else if (MissingCsrfTokenException.class.isAssignableFrom(clazz) ||
+                InvalidCsrfTokenException.class.isAssignableFrom(clazz))
+        {
+            message = "Access Denied";
+        }
+        else if (AuthenticationException.class.isAssignableFrom(clazz)) {
+            status = HttpStatus.UNAUTHORIZED;
+            message = "Authentication error";
+        }
+        else if (AccessDeniedException.class.isAssignableFrom(clazz)) {
+            status = HttpStatus.FORBIDDEN;
+            message = "Access denied";
+        }
+        
+        return errorResponse(status, message);
+    }
+    
+    private ResponseEntity<ErrorResponse> responseEntity(final HttpStatus status, final String description) {
+        return new ResponseEntity<ErrorResponse>(errorResponse(status, description), status);
+    }
+    
+    private ResponseEntity<ErrorResponse> responseEntity(final ErrorResponse errorResponse) {
+        return new ResponseEntity<ErrorResponse>(errorResponse, errorResponse.getStatus());
+    }
+    
+    private ErrorResponse errorResponse(final HttpStatus status, final String description) {
+        return new ErrorResponse(status, description);
     }
 }

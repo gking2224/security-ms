@@ -49,13 +49,16 @@ springBoot {
 }
 bootRun {
     jvmArgs "-Xdebug"
-    jvmArgs "-Xrunjdwp:server=y,transport=dt_socket,suspend=n,address="+project.envProps.jdwpPort
+    jvmArgs "-Xrunjdwp:server=y,transport=dt_socket,suspend=y,address="+project.envProps.jdwpPort
     jvmArgs "-Dorg.jboss.logging.provider=slf4j"
-    args = ["--spring.profiles.active=jmx,web,batch,"+project.env, "--debug"]
+    args = ["-a", "batch", "web", "-e", "local"]
+//    args = ["--spring.profiles.active=jmx,web,batch,"+project.env, "--debug"]
 }
 bootRepackage {
-    mainClass = 'me.gking2224.mstemplate.MicroServiceTemplateApplication'
+    mainClass = 'me.gking2224.securityms.SecurityServiceApplication'
+    classifier = "boot"
     withJarTask = jar
+    
 }
 
 sourceCompatibility = 1.8
@@ -240,11 +243,16 @@ project.sourceSets {
 }
 dependencies {
     clientlib "org.springframework.security:spring-security-core:$springSecurityVersion"
+    clientlib "org.springframework.security:spring-security-core:$springSecurityVersion"
     clientlib("org.springframework.security:spring-security-web:$springSecurityVersion")
     clientlib("org.springframework.security:spring-security-config:$springSecurityVersion")
     clientlib("org.springframework:spring-jms:$springJmsVersion")
     clientlib "org.springframework:spring-web:$springVersion"
-    clientlib "me.gking2224:gk-microservice-utils:0.0.1-SNAPSHOT"
+    clientlib("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
+    clientlib group: "me.gking2224", name: "gk-utils", version: "0.0.1-SNAPSHOT"
+    clientlib group: "me.gking2224", name: "gk-microservice-utils-client", classifier: "client", version: "0.0.1-SNAPSHOT"
+    clientlib("org.apache.activemq:activemq-core:5.7.0")
+    clientlib("org.springframework.boot:spring-boot:$springBootVersion")
 }
 
 clientlib {

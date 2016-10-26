@@ -4,7 +4,6 @@ import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreato
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.AnnotationTransactionAttributeSource;
@@ -14,7 +13,6 @@ import org.springframework.transaction.interceptor.TransactionInterceptor;
 
 @Profile("!embedded")
 @ComponentScan({"me.gking2224.securityms.db"})
-@Import(me.gking2224.common.db.CommonDatabaseConfiguration.class)
 public class DatabaseConfiguration {
 
     @Autowired

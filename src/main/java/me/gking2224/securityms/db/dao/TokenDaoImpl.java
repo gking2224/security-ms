@@ -3,6 +3,7 @@ package me.gking2224.securityms.db.dao;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -30,13 +31,12 @@ public class TokenDaoImpl extends AbstractDaoImpl<Token, Long> implements TokenD
     }
 
     @Override
-    public int deleteExpired() {
+    public List<String> deleteExpired() {
         
         Long cutoff = Instant.now().minus(deleteExpiredGracePeriod()).toEpochMilli();
         List<Token> expired = repository.findByExpiryLessThan(cutoff);
-        int rv = expired.size();
         repository.deleteInBatch(expired);
-        return rv;
+        return expired.stream().map(Token::getToken).collect(Collectors.toList());
     }
 
     private Duration deleteExpiredGracePeriod() {
@@ -44,14 +44,13 @@ public class TokenDaoImpl extends AbstractDaoImpl<Token, Long> implements TokenD
     }
 
     @Override
-    public int invalidateUserSession(final String username, final String comment) {
+    public List<String> invalidateUserSession(final String username, final String comment) {
         List<Token> tokens = repository.findByUserUsername(username);
-        int rv = tokens.size();
         tokens.forEach(t -> {
            t.invalidate(comment); 
         });
         
         repository.save(tokens);
-        return rv;
+        return tokens.stream().map(Token::getToken).collect(Collectors.toList());
     }
 }

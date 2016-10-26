@@ -1,5 +1,6 @@
 package me.gking2224.securityms.service;
 
+import java.util.List;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -15,6 +16,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import me.gking2224.common.utils.RandomString;
+import me.gking2224.securityms.client.TokenExpiredMessage;
+import me.gking2224.securityms.client.TokenInvalidatedException;
+import me.gking2224.securityms.client.TokenInvalidatedMessage;
 import me.gking2224.securityms.db.dao.TokenDao;
 import me.gking2224.securityms.db.dao.UserDao;
 import me.gking2224.securityms.model.User;
@@ -36,12 +40,17 @@ public class ManagementServiceImpl implements ManagementService {
     
     @Autowired
     private TokenDao tokenDao;
+    
+    
+    @Autowired SecurityEventListener eventListener;
 
     @Override
     @Transactional(readOnly=false)
     @ManagedOperation(description="Clean Expired Tokens")
     public int cleanExpiredTokens() {
-        return tokenDao.deleteExpired();
+        List<String> deleted = tokenDao.deleteExpired();
+        deleted.forEach(t->notifyExpired(t));
+        return deleted.size();
     }
 
     @Override
@@ -52,7 +61,17 @@ public class ManagementServiceImpl implements ManagementService {
         @ManagedOperationParameter(name="comment", description="Comment (to be sent to user)")
     })
     public int invalidateUserSession(final String username, final String comment) {
-        return tokenDao.invalidateUserSession(username, comment);
+        List<String> tokens = tokenDao.invalidateUserSession(username, comment);
+        tokens.forEach(t->notifyInvalidated(t, comment));
+        return tokens.size();
+    }
+    
+    private void notifyInvalidated(final String token, final String msg) {
+        eventListener.onEvent(new TokenInvalidatedMessage(token, new TokenInvalidatedException(msg)));
+    }
+    
+    private void notifyExpired(final String token) {
+        eventListener.onEvent(new TokenExpiredMessage(token));
     }
 
     @Override

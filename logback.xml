@@ -41,15 +41,16 @@
   </appender>
   
   <logger name="me.gking2224.common.aop.TraceAspect" level="TRACE"/>
-  <logger name="me.gking2224" level="DEBUG"/>
+  <logger name="me.gking2224" level="INFO"/>
   <logger name="me.gking2224.common.db.embedded.EmbeddedMySQLDatabase" level="WARN"/>
-  <logger name="me.gking2224.common.utils.NestedProperties" level="WARN"/>
+  <logger name="me.gking2224.common.utils.NestedProperties" level="DEBUG"/>
   
   <logger name="org.hibernate.engine" level="WARN"/>
   
   <logger name="org.eclipse.jetty" level="WARN"/>
   
   <logger name="org.springframework" level="INFO"/>
+  <logger name="org.springframework.core.env.AbstractPropertyResolver" level="TRACE"/>
   
   <root level="WARN">
     <!--<appender-ref ref="console"/>-->

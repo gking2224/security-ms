@@ -1,5 +1,6 @@
 package me.gking2224.securityms.service;
 
+import static me.gking2224.common.client.jms.CommonMessagingConfiguration.TOPIC_LISTENER_CONTAINER_FACTORY;
 import static me.gking2224.securityms.client.SecurityServiceClient.KEEP_TOKEN_ALIVE_TOPIC;
 
 import java.time.Clock;
@@ -144,7 +145,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return new Authentication(token.getToken(), user.getUserDetails(), roles, perms, token.getExpiry());
     }
     
-    @JmsListener(destination=KEEP_TOKEN_ALIVE_TOPIC)
+    @JmsListener(destination=KEEP_TOKEN_ALIVE_TOPIC, containerFactory=TOPIC_LISTENER_CONTAINER_FACTORY)
     @Transactional(readOnly=false)
     @Override
     public void keepTokenAlive(final String token) {
@@ -197,7 +198,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     private void checkPassword(final String storedPassword, final String givenPassword, final String username) {
-        
+        @SuppressWarnings("unused")
+        String expecting = passwordEncoder.encode(givenPassword); // for debugging!
         if (!passwordEncoder.matches(givenPassword, storedPassword)) {
             throw new BadCredentialsException("Given password is incorrect");
         }

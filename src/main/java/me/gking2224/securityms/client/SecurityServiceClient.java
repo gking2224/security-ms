@@ -5,6 +5,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -18,33 +20,30 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.client.ResourceAccessException;
-import org.springframework.web.client.RestTemplate;
 
-public class SecurityServiceClient {
+import me.gking2224.common.client.AbstractServiceClient;
+
+public class SecurityServiceClient extends AbstractServiceClient {
     
     public static final String KEEP_TOKEN_ALIVE_TOPIC = "KeepTokenAlive";
+    public static final String TOKEN_INVALIDATED_TOPIC = "TokenInvalidated";
+    public static final String TOKEN_EXPIRED_TOPIC = "TokenExpired";
     
     private String host;
     private int port;
     private String context;
-    private String baseUrl;
     private String createTokenUrl;
     private String validateUrl;
     private String invalidateUrl;
     
-    private RestTemplate restTemplate;
-    
     private JmsTemplate jmsTemplate;
     private Topic keepTokenAliveTopic;
-
-    protected RestTemplate getRestTemplate() {
-        return restTemplate;
-    }
-
-    public void setRestTemplate(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
-    }
+    private Topic tokenInvalidatedTopic;
+    private Topic tokenExpiredTopic;
+    
+    private Map<String, AuthenticationException> invalidatedTokens = new HashMap<String, AuthenticationException>();
 
     public SecurityServiceClient() {
         super();
@@ -89,32 +88,28 @@ public class SecurityServiceClient {
     public void setKeepTokenAliveTopic(Topic t) {
         this.keepTokenAliveTopic = t;
     }
-    
-    protected String getBaseUrl() {
-        if (baseUrl == null) {
-            baseUrl = String.format("http://%s:%d/%s", this.host, this.port, this.context);
-        }
-        return baseUrl;
+
+    public Topic getTokenInvalidatedTopic() {
+        return tokenInvalidatedTopic;
     }
 
-    protected String getAuthenticateUrl() {
-        if (createTokenUrl == null) {
-            createTokenUrl = String.format("%s/authenticate", getBaseUrl());
-        }
-        return createTokenUrl;
+    public void setTokenInvalidatedTopic(Topic tokenInvalidatedTopic) {
+        this.tokenInvalidatedTopic = tokenInvalidatedTopic;
+    }
+    
+    public Topic getTokenExpiredTopic() {
+        return tokenExpiredTopic;
+    }
+
+    public void setTokenExpiredTopic(Topic tokenExpiredTopic) {
+        this.tokenExpiredTopic = tokenExpiredTopic;
     }
 
     protected String getValidateUrl(final String token) {
-        if (validateUrl == null) {
-            validateUrl = String.format("%s/validate", getBaseUrl());
-        }
         return String.format("%s/%s", validateUrl, token);
     }
 
     protected String getInvalidateUrl(final String token) {
-        if (invalidateUrl == null) {
-            invalidateUrl = String.format("%s/invalidate", getBaseUrl());
-        }
         return String.format("%s/%s", invalidateUrl, token);
     }
     
@@ -127,11 +122,13 @@ public class SecurityServiceClient {
 
         HttpEntity<TokenRequest> entity = new HttpEntity<TokenRequest>(rq, headers);
 
-        ResponseEntity<Authentication> token = getRestTemplate().exchange(getAuthenticateUrl(), POST, entity, Authentication.class);
+        ResponseEntity<Authentication> token = getRestTemplate().exchange(createTokenUrl, POST, entity, Authentication.class);
         return (Authentication)token.getBody();
     }
+    
     public Authentication validate(final String token) {
 
+        checkTokenNotInvalidated(token);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
@@ -145,10 +142,12 @@ public class SecurityServiceClient {
         catch (ResourceAccessException t) {
             throw new ServiceUnavailableException(t.getMessage(), t);
         }
+        catch (Throwable t) {
+            throw t;
+        }
     }
     public void invalidate(final String token) {
-
-
+        
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
         headers.setContentType(MediaType.TEXT_PLAIN);
@@ -161,15 +160,47 @@ public class SecurityServiceClient {
         }
     }
 
+    private void checkTokenNotInvalidated(String token) {
+        if (invalidatedTokens.containsKey(token)) {
+            AuthenticationException e = invalidatedTokens.get(token);
+            throw e;
+        }
+    }
+
     private void keepTokenAlive(final String token) {
         if (jmsTemplate != null && keepTokenAliveTopic != null) {
             jmsTemplate.send(keepTokenAliveTopic, new MessageCreator() {
                 
                 @Override
                 public Message createMessage(Session session) throws JMSException {
-                    return session.createObjectMessage(new KeepTokenAliveEvent(token));
+                    return session.createTextMessage(token);
                 }
             });
         }
+    }
+
+    /**
+     * Notification that we should fail-fast a future valiation request for this token
+     * @param token
+     * @param authenticationException 
+     */
+    public void tokenInvalidated(final String token, AuthenticationException e) {
+        invalidatedTokens.put(token, e);
+    }
+
+    /**
+     * Notification that we should fail-fast a future valiation request for this token
+     * @param token
+     * @param authenticationException 
+     */
+    public void tokenExpired(final String token) {
+        invalidatedTokens.remove(token);
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        createTokenUrl = String.format("%s/authenticate", getBaseUrl());
+        validateUrl = String.format("%s/validate", getBaseUrl());
+        invalidateUrl = String.format("%s/invalidate", getBaseUrl());
     }
 }

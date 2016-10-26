@@ -20,17 +20,21 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import me.gking2224.common.client.ErrorResponse;
 import me.gking2224.common.client.ErrorResponseException;
+import me.gking2224.securityms.common.SecurityErrorHandler;
 
 @Component
 public class TokenProcessingFilter extends OncePerRequestFilter {
     
-    private static final String TOKEN_HEADER = "Authentication";
+    public static final String TOKEN_HEADER = "Authentication";
 
     @SuppressWarnings("unused")
     private static Logger logger = LoggerFactory.getLogger(TokenProcessingFilter.class);
     
-    @Autowired(required=true)
+    @Autowired
     private SecurityServiceClient serviceClient;
+    
+    @Autowired
+    private SecurityErrorHandler errorHandler;
     
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
@@ -50,11 +54,11 @@ public class TokenProcessingFilter extends OncePerRequestFilter {
         }
         catch (ServiceUnavailableException e) {
             throw new ErrorResponseException(
-                    new ErrorResponse(HttpStatus.SERVICE_UNAVAILABLE.value(), "Security Service not available"));
+                    new ErrorResponse(HttpStatus.SERVICE_UNAVAILABLE, "Security Service not available"));
         }
         catch (AuthenticationException e) {
             removeSecurityContext();
-            throw e;
+            throw new ErrorResponseException(errorHandler.errorResponse(e));
         }
     }
 

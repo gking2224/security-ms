@@ -1,6 +1,8 @@
 package me.gking2224.securityms.security;
 
 import static me.gking2224.securityms.client.SecurityServiceClient.KEEP_TOKEN_ALIVE_TOPIC;
+import static me.gking2224.securityms.client.SecurityServiceClient.TOKEN_EXPIRED_TOPIC;
+import static me.gking2224.securityms.client.SecurityServiceClient.TOKEN_INVALIDATED_TOPIC;
 
 import java.net.NetworkInterface;
 import java.nio.ByteBuffer;
@@ -13,10 +15,10 @@ import javax.jms.Topic;
 
 import org.apache.activemq.command.ActiveMQTopic;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
@@ -27,16 +29,11 @@ import org.springframework.security.crypto.encrypt.BytesEncryptor;
 import org.springframework.security.crypto.encrypt.Encryptors;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-//@EnableWebSecurity(debug=true)
-@PropertySource("/security.properties")
+import me.gking2224.common.client.MicroServiceEnvironment;
+import me.gking2224.common.utils.RandomString;
+
 @ComponentScan("me.gking2224.securityms.security")
-public class SecurityConfiguration {//extends WebSecurityConfigurerAdapter {
-    
-    @Value("${encryptionSalt}")
-    private String encryptionSalt;
-    
-    @Value("${encryptionPassword}")
-    private String encryptionPassword;
+public class SecurityConfiguration {
     
     private Charset charset = StandardCharsets.UTF_8;
 
@@ -48,6 +45,16 @@ public class SecurityConfiguration {//extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private ObjectPostProcessor<Object> objectPostProcessor;
+    
+    @Autowired @Qualifier("pubSubTemplate") JmsTemplate pubSubTemplate;
+    
+    @Autowired @Qualifier(TOKEN_INVALIDATED_TOPIC) Topic sessionInvalidatedTopic;
+    
+    @Autowired MicroServiceEnvironment env;
+
+    private String encryptionPassword;
+
+    private String encryptionSalt;
 
     protected byte[] getBytes(final String s) {
         return s.getBytes(charset);
@@ -55,7 +62,21 @@ public class SecurityConfiguration {//extends WebSecurityConfigurerAdapter {
     
     @Bean
     public BytesEncryptor encryptor() {
-        return Encryptors.stronger(encryptionPassword, encryptionSalt);
+        return Encryptors.stronger(encryptionPassword(), encryptionSalt());
+    }
+
+    private String encryptionPassword() {
+        if (this.encryptionPassword == null) {
+            this.encryptionPassword = env.getRequiredProperty("security.encryptionPassword");
+        }
+        return this.encryptionPassword;
+    }
+
+    private String encryptionSalt() {
+        if (this.encryptionSalt == null) {
+            this.encryptionSalt = RandomString.asHex(24);//env.getRequiredProperty("security.encryptionSalt");
+        }
+        return this.encryptionSalt;
     }
 
     @Bean
@@ -77,35 +98,30 @@ public class SecurityConfiguration {//extends WebSecurityConfigurerAdapter {
         } catch (Throwable t) {
         }
         rv.setServerInteger(serverInteger);
-        rv.setSecureRandom(new SecureRandom(getBytes(encryptionSalt)));
-        rv.setServerSecret(encryptionPassword);
+        rv.setSecureRandom(new SecureRandom(getBytes(encryptionSalt())));
+        rv.setServerSecret(encryptionPassword());
         return rv;
     }
     
     @Bean(KEEP_TOKEN_ALIVE_TOPIC)
     public Topic keepTokenAlive() {
-        return new ActiveMQTopic(KEEP_TOKEN_ALIVE_TOPIC);
+        ActiveMQTopic t = new ActiveMQTopic(KEEP_TOKEN_ALIVE_TOPIC);
+        return t;
+    }
+    
+    @Bean(TOKEN_INVALIDATED_TOPIC)
+    public Topic tokenInvalidatedTopic() {
+        return new ActiveMQTopic(TOKEN_INVALIDATED_TOPIC);
+    }
+    
+    @Bean(TOKEN_EXPIRED_TOPIC)
+    public Topic tokenExpiredTopic() {
+        return new ActiveMQTopic(TOKEN_EXPIRED_TOPIC);
     }
     
     @Bean
     public Charset charset() {
         return charset;
-    }
-
-    public String getEncryptionSalt() {
-        return encryptionSalt;
-    }
-
-    public void setEncryptionSalt(String encryptionSalt) {
-        this.encryptionSalt = encryptionSalt;
-    }
-
-    public String getEncryptionPassword() {
-        return encryptionPassword;
-    }
-
-    public void setEncryptionPassword(String encryptionPassword) {
-        this.encryptionPassword = encryptionPassword;
     }
 
     public Charset getCharset() {
@@ -138,5 +154,13 @@ public class SecurityConfiguration {//extends WebSecurityConfigurerAdapter {
 
     public void setObjectPostProcessor(ObjectPostProcessor<Object> objectPostProcessor) {
         this.objectPostProcessor = objectPostProcessor;
+    }
+
+    public void setEncryptionPassword(String encryptionPassword) {
+        this.encryptionPassword = encryptionPassword;
+    }
+
+    public void setEncryptionSalt(String encryptionSalt) {
+        this.encryptionSalt = encryptionSalt;
     }
 }

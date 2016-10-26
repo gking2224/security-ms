@@ -2,7 +2,7 @@ package me.gking2224.securityms.client;
 
 import java.io.Serializable;
 
-public class KeepTokenAliveEvent implements Serializable {
+public class KeepTokenAliveMessage implements Serializable {
 
     /**
      * 
@@ -11,11 +11,11 @@ public class KeepTokenAliveEvent implements Serializable {
     
     private String token;
 
-    public KeepTokenAliveEvent() {
+    public KeepTokenAliveMessage() {
         super();
     }
 
-    public KeepTokenAliveEvent(String token) {
+    public KeepTokenAliveMessage(String token) {
         this();
         this.token = token;
     }
@@ -44,7 +44,7 @@ public class KeepTokenAliveEvent implements Serializable {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        KeepTokenAliveEvent other = (KeepTokenAliveEvent) obj;
+        KeepTokenAliveMessage other = (KeepTokenAliveMessage) obj;
         if (token == null) {
             if (other.token != null)
                 return false;
@@ -55,6 +55,6 @@ public class KeepTokenAliveEvent implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("KeepTokenAliveEvent [token=%s]", token);
+        return String.format("KeepTokenAliveMessage [token=%s]", token);
     }
 }
