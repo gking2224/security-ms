@@ -9,7 +9,7 @@ buildscript {
 //        maven.url "http://repo.spring.io/milestone"
     }
     dependencies {
-        classpath "me.gking2224:gk-utils:0.0.1"
+        classpath "me.gking2224:gk-utils:0.0.2"
     }
 }
 
