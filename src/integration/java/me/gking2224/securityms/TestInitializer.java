@@ -17,7 +17,7 @@ public class TestInitializer implements ApplicationContextInitializer<GenericApp
         Set<String> profiles = new HashSet<String>(
                 Arrays.asList(applicationContext.getEnvironment().getActiveProfiles()));
         ConfigurableWebEnvironmentImplementation env = new ConfigurableWebEnvironmentImplementation(
-                "securityms", "embedded", profiles);
+                "securityms", "ci", profiles);
         applicationContext.setEnvironment(env);
         new EnvironmentExtender(env).extendEnvironmentWithAnnotatedProperties("me.gking2224");
         env.registerEnvironmentPropertiesAsBeans(applicationContext);
