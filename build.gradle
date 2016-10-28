@@ -151,7 +151,7 @@ dependencies {
     
     // UTILS
     compile group: 'org.aspectj', name: 'aspectjtools', version: '1.6.2'
-    compile("me.gking2224:gk-microservice-utils:0.0.5-SNAPSHOT")
+    compile("me.gking2224:gk-microservice-utils:0.0.5")
     
     
     // TESTING
@@ -248,7 +248,7 @@ dependencies {
     clientlib("org.springframework:spring-jms:$springJmsVersion")
     clientlib "org.springframework:spring-web:$springVersion"
     clientlib("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
-    clientlib group: "me.gking2224", name: "gk-microservice-utils", classifier: "client", version: "0.0.5-SNAPSHOT"
+    clientlib group: "me.gking2224", name: "gk-microservice-utils", classifier: "client", version: "0.0.5"
     clientlib("org.apache.activemq:activemq-core:5.7.0")
     clientlib("org.springframework.boot:spring-boot:$springBootVersion")
 }
