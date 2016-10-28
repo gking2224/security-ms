@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -33,6 +34,7 @@ import me.gking2224.common.client.MicroServiceEnvironment;
 import me.gking2224.common.utils.RandomString;
 
 @ComponentScan("me.gking2224.securityms.security")
+@Configuration
 public class SecurityConfiguration {
     
     private Charset charset = StandardCharsets.UTF_8;

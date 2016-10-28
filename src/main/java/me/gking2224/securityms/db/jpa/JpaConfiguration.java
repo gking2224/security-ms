@@ -8,6 +8,7 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaDialect;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -16,7 +17,9 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import me.gking2224.common.db.EntityManagerFactoryBeanBuilder;
+import me.gking2224.common.db.HibernateConfiguration;
 
+@Import(HibernateConfiguration.class)
 @Configuration
 @EnableJpaRepositories(basePackages={"me.gking2224.securityms.db.jpa"}, entityManagerFactoryRef="entityManagerFactory")
 public class JpaConfiguration {

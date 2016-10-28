@@ -151,7 +151,7 @@ dependencies {
     
     // UTILS
     compile group: 'org.aspectj', name: 'aspectjtools', version: '1.6.2'
-    compile("me.gking2224:gk-microservice-utils:0.0.2")
+    compile("me.gking2224:gk-microservice-utils:0.0.3")
     
     
     // TESTING
@@ -160,6 +160,7 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     testCompile "pl.pragmatists:JUnitParams:1.0.5"
     testCompile "org.jmock:jmock-junit4:2.8.2"
+    testCompile group: "me.gking2224", name: "gk-utils", version: "0.0.3"
     
     
     // RUNTIME
@@ -247,7 +248,6 @@ dependencies {
     clientlib("org.springframework:spring-jms:$springJmsVersion")
     clientlib "org.springframework:spring-web:$springVersion"
     clientlib("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
-    clientlib group: "me.gking2224", name: "gk-utils", version: "0.0.2"
     clientlib group: "me.gking2224", name: "gk-microservice-utils", classifier: "client", version: "0.0.2"
     clientlib("org.apache.activemq:activemq-core:5.7.0")
     clientlib("org.springframework.boot:spring-boot:$springBootVersion")

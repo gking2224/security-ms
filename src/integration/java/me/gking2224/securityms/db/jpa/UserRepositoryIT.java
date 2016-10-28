@@ -10,21 +10,20 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import me.gking2224.securityms.TestConfiguration;
+import me.gking2224.securityms.TestInitializer;
 import me.gking2224.securityms.model.Permission;
 import me.gking2224.securityms.model.Role;
 import me.gking2224.securityms.model.RolePermission;
 import me.gking2224.securityms.model.User;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ActiveProfiles({"embedded"})
-@ContextConfiguration(classes=TestConfiguration.class)
+@ContextConfiguration(name="securityms", classes=TestConfiguration.class, initializers={TestInitializer.class})
 @Transactional
 @Rollback
 public class UserRepositoryIT {
@@ -38,6 +37,8 @@ public class UserRepositoryIT {
         
         User u = new User();
         u.setUsername(name);
+        u.setFirstName("Donald");
+        u.setSurname("Trump");
         User saved = repository.save(u);
         assertNotNull(saved);
         assertEquals(name, saved.getUsername());
@@ -47,10 +48,10 @@ public class UserRepositoryIT {
     @Sql("../../SingleUser.sql")
     public void testFindOne() {
         
-        User u = repository.findOne(1L);
+        User u = repository.findOne(100L);
         
         assertNotNull(u);
-        assertEquals("Test User", u.getUsername());
+        assertEquals("test", u.getUsername());
         
         Set<Role> roles = u.getRoles();
         assertNotNull(roles);

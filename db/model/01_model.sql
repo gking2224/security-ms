@@ -199,7 +199,7 @@ SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 -- Data for table `User`
 -- -----------------------------------------------------
 START TRANSACTION;
-INSERT INTO `User` (`user_id`, `username`, `password`, `enabled`, `firstName`, `surname`) VALUES (-1, 'super', 'x', 1, 'Super', 'User');
+INSERT INTO `User` (`user_id`, `username`, `password`, `enabled`, `firstName`, `surname`) VALUES (1, 'super', 'x', 1, 'Super', 'User');
 
 COMMIT;
 
@@ -228,7 +228,7 @@ COMMIT;
 -- Data for table `UserRole`
 -- -----------------------------------------------------
 START TRANSACTION;
-INSERT INTO `UserRole` (`user_id`, `role_id`) VALUES (-1, 1);
+INSERT INTO `UserRole` (`user_id`, `role_id`) VALUES (1, 1);
 
 COMMIT;
 
