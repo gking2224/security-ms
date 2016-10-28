@@ -2,6 +2,7 @@ package me.gking2224.securityms.db;
 
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Profile;
@@ -26,7 +27,9 @@ public class DatabaseConfiguration {
         return rv;
     }
     @Bean
-    public TransactionAttributeSourceAdvisor txAttributeAdvisor(TransactionInterceptor txInterceptor) {
+    public TransactionAttributeSourceAdvisor txAttributeAdvisor(
+            @Qualifier("transactionInterceptor") TransactionInterceptor txInterceptor
+    ) {
         TransactionAttributeSourceAdvisor rv = new TransactionAttributeSourceAdvisor();
         rv.setTransactionInterceptor(txInterceptor);
         return rv;
