@@ -1,5 +1,5 @@
 # base
-FROM me.gking2224/ms-base:v3
+FROM 839324330571.dkr.ecr.eu-west-1.amazonaws.com/me.gking2224/ms-base:v3
 
 # details
 MAINTAINER Graham King <gking2224@gmail.com>
