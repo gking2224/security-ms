@@ -249,6 +249,7 @@ task buildDockerImage(type: Docker) {
     hostUrl = { project.ecrRepository }
     apiUsername = { project.ecrUsername }
     apiPassword = { project.ecrPassword }
+    apiEmail = "none"
 
 }
 buildDockerImage.dependsOn dockerLogin
