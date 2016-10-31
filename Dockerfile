@@ -1,5 +1,5 @@
 # base
-FROM me.gking2224/ms-base:v2
+FROM me.gking2224/ms-base:v3
 
 # details
 MAINTAINER Graham King <gking2224@gmail.com>
@@ -7,7 +7,7 @@ MAINTAINER Graham King <gking2224@gmail.com>
 # labels
 
 # build args
-ARG version
+#ARG version
 	
 # environment variables
 ENV SERVICE       securityms
@@ -25,8 +25,10 @@ ENV JAR           $WORK_DIR/service.jar
 USER $user
 
 # fetch code
-COPY build/libs/${SERVICE}-${version}-boot.jar $WORK_DIR/service.jar
-COPY logback.xml $WORK_DIR/logback.xml
+#COPY build/libs/${SERVICE}-${version}-boot.jar $WORK_DIR/service.jar
+#COPY logback.xml $WORK_DIR/logback.xml
+
+RUN aws s3 sync s3://gk-microservices/env-properties $PROPS_DIR
 
 # executable
 WORKDIR ${WORK_DIR}

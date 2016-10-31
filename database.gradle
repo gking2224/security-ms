@@ -1,7 +1,7 @@
 
 import java.util.regex.Pattern.Branch;
 
-import me.gking2224.awsplugin.task.CreateInstanceTask
+import me.gking2224.awsplugin.task.ec2.CreateInstanceTask
 import me.gking2224.buildtools.tasks.RemoteExec
 import me.gking2224.dbgp.plugin.task.ExecuteDatabaseScript
 
