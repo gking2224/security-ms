@@ -16,7 +16,7 @@ buildscript {
     }
     dependencies {
         classpath "me.gking2224:BuildToolsGradlePlugin:0.1.8"
-        classpath "me.gking2224:AmazonAWSGradlePlugin:0.1.8"
+        classpath "me.gking2224:AmazonAWSGradlePlugin:0.1.9"
         classpath "me.gking2224:DatabaseBuildGradlePlugin:0.1.0"
         classpath "mysql:mysql-connector-java:5.1.39"
     }
