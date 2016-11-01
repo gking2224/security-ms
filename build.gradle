@@ -32,7 +32,6 @@ jar {
 }
 
 
-//apply from: 'artifactory.gradle'
 apply from: 'database.gradle'
 apply from: 'environments.gradle'
 
