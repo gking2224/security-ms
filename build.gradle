@@ -12,11 +12,12 @@ buildscript {
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.1.RELEASE")
 //        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.4.0"
-        classpath "me.gking2224:BuildToolsGradlePlugin:0.2.5"
-        classpath "me.gking2224:AmazonAWSGradlePlugin:0.1.9"
-        classpath "me.gking2224:DockerPlugin:0.0.2"
-        classpath "me.gking2224:DatabaseBuildGradlePlugin:0.1.1"
-        classpath "me.gking2224:WebAppBuildGradlePlugin:0.0.1"
+        classpath "me.gking2224:BuildToolsGradlePlugin:0.2.+"
+        classpath "me.gking2224:AmazonAWSGradlePlugin:0.1.+"
+        classpath "me.gking2224:DockerPlugin:0.0.+"
+        classpath "me.gking2224:DatabaseBuildGradlePlugin:0.1.+"
+        classpath "me.gking2224:WebAppBuildGradlePlugin:0.0.+"
+        classpath "me.gking2224:MicroServicesGradlePlugin:0.0.+"
         classpath "mysql:mysql-connector-java:5.1.39"
         classpath 'se.transmode.gradle:gradle-docker:1.2'
     }
@@ -27,7 +28,7 @@ plugins {
 }
 
 ext {
-    buildToolsVersion = "0.2.5"
+    buildToolsVersion = "0.2.+"
     springVersion = "4.3.1.RELEASE"
     springDataVersion = "1.10.2.RELEASE"
     springBootVersion = "1.4.1.RELEASE"
@@ -45,21 +46,6 @@ jar {
     version =  project.version
 }
 
-ext {
-    buildToolsVersion ="0.2.4"
-    springVersion = "4.3.1.RELEASE"
-    springDataVersion = "1.10.2.RELEASE"
-    springBootVersion = "1.4.1.RELEASE"
-    springJmsVersion = "4.3.3.RELEASE"
-    springSecurityVersion = "4.1.3.RELEASE"
-    jacksonVersion = "2.8.0"
-    freemarkerVersion = "2.3.23"
-    slf4jVersion = "1.7.21"
-    hibernateVersion = "5.2.1.Final"
-    mysqlVersion = "5.1.39"
-    logbackVersion = "1.1.1"
-}
-
 apply from: 'database.gradle'
 apply from: 'environments.gradle'
 
@@ -68,6 +54,7 @@ apply plugin: 'me.gking2224.awsplugin'
 apply plugin: 'me.gking2224.dockerplugin'
 apply plugin: 'me.gking2224.databasebuild'
 apply plugin: 'me.gking2224.webappbuild'
+apply plugin: 'me.gking2224.msplugin'
 apply plugin: 'docker'
 
 
@@ -172,8 +159,8 @@ dependencies {
     
     // UTILS
     compile group: 'org.aspectj', name: 'aspectjtools', version: '1.6.2'
-    compile group: "me.gking2224", name: "gk-utils", version: "0.0.5"
-    compile("me.gking2224:gk-microservice-utils:0.0.5")
+    compile group: "me.gking2224", name: "gk-utils", version: "0.0.+"
+    compile("me.gking2224:gk-microservice-utils:0.0.+")
     
     
     // TESTING
@@ -182,7 +169,6 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
     testCompile "pl.pragmatists:JUnitParams:1.0.5"
     testCompile "org.jmock:jmock-junit4:2.8.2"
-    testCompile group: "me.gking2224", name: "gk-utils", version: "0.0.5"
     
     
     // RUNTIME
@@ -238,57 +224,4 @@ clientlib {
     manifest {
         attributes 'Main-Class': 'me.gking2224.securityms.client.SecurityServiceClient'
     }
-}
-
-task ecrGetLogin(type: me.gking2224.awsplugin.task.ecr.GetLogin) {
-    registryId = project.dockerEcrRegistryId
-}
-
-ecrGetLogin << {
-    dockerplugin {
-        registryUsername = project.ecrUsername
-        registryPassword = project.ecrPassword
-        registryUrl = project.ecrRepository
-    }
-}
-
-task dockerLogin(type: me.gking2224.dockerplugin.task.DockerLogin)
-dockerLogin.dependsOn ecrGetLogin
-
-gradle.beforeProject {
-    println "bp"
-}
-allprojects {
-    beforeEvaluate {project ->
-        println "beforeEvaluate"
-        println project.gradle.startParameter.getTaskNames()
-    }
-}
-
-task buildDockerImage(type: Docker) {
-    dockerfile = new File(projectDir, 'Dockerfile')
-    applicationName = project.name
-    addFile new File("build/libs/${project.name}-${project.preReleaseVersion}-boot.jar"), "\$WORK_DIR/service.jar"
-    addFile new File("logback.xml"), "\$WORK_DIR"
-    hostUrl = { project.ecrRepository }
-    apiUsername = { project.ecrUsername }
-    apiPassword = { project.ecrPassword }
-    apiEmail = "none"
-}
-buildDockerImage.dependsOn dockerLogin
-task tagImageForRemote(type: me.gking2224.dockerplugin.task.TagImage) {
-    registry = { project.dockerRepositoryName + "/" + project.group + "/" + project.name }
-    tag = project.preReleaseVersion
-}
-tagImageForRemote.dependsOn ecrGetLogin
-
-task pushImage(type: me.gking2224.dockerplugin.task.PushImage) {
-    imageId = project.dockerRepositoryName + "/" + project.group + "/" + project.name + ":" + project.version
-}
-pushImage.dependsOn tagImageForRemote
-
-postReleaseHook.dependsOn('buildDockerImage', 'pushImage')
-
-task testv (dependsOn: removeSnapshot) << {
-    println project.version
 }
