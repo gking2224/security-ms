@@ -255,10 +255,20 @@ ecrGetLogin << {
 task dockerLogin(type: me.gking2224.dockerplugin.task.DockerLogin)
 dockerLogin.dependsOn ecrGetLogin
 
+gradle.beforeProject {
+    println "bp"
+}
+allprojects {
+    beforeEvaluate {project ->
+        println "beforeEvaluate"
+        println project.gradle.startParameter.getTaskNames()
+    }
+}
+
 task buildDockerImage(type: Docker) {
     dockerfile = new File(projectDir, 'Dockerfile')
     applicationName = project.name
-    addFile new File("build/libs/${project.name}-${project.originalVersion}-boot.jar"), "\$WORK_DIR/service.jar"
+    addFile new File("build/libs/${project.name}-${project.preReleaseVersion}-boot.jar"), "\$WORK_DIR/service.jar"
     addFile new File("logback.xml"), "\$WORK_DIR"
     hostUrl = { project.ecrRepository }
     apiUsername = { project.ecrUsername }
