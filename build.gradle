@@ -278,7 +278,7 @@ task buildDockerImage(type: Docker) {
 buildDockerImage.dependsOn dockerLogin
 task tagImageForRemote(type: me.gking2224.dockerplugin.task.TagImage) {
     registry = { project.dockerRepositoryName + "/" + project.group + "/" + project.name }
-    tag = {project.version}
+    tag = project.preReleaseVersion
 }
 tagImageForRemote.dependsOn ecrGetLogin
 
