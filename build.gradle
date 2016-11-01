@@ -12,7 +12,7 @@ buildscript {
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.1.RELEASE")
 //        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.4.0"
-        classpath "me.gking2224:BuildToolsGradlePlugin:0.2.1"
+        classpath "me.gking2224:BuildToolsGradlePlugin:0.2.2"
         classpath "me.gking2224:AmazonAWSGradlePlugin:0.1.9"
         classpath "me.gking2224:DockerPlugin:0.0.2"
         classpath "me.gking2224:DatabaseBuildGradlePlugin:0.1.1"
