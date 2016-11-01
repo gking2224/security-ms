@@ -277,7 +277,7 @@ task pushImage(type: me.gking2224.dockerplugin.task.PushImage) {
 }
 pushImage.dependsOn tagImageForRemote
 
-postReleaseHook.dependsOn('buildDockerImage', 'pushImage')
+//postReleaseHook.dependsOn('buildDockerImage', 'pushImage')
 
 
 task testv (dependsOn: removeSnapshot) << {
