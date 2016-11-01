@@ -264,12 +264,11 @@ task buildDockerImage(type: Docker) {
     apiUsername = { project.ecrUsername }
     apiPassword = { project.ecrPassword }
     apiEmail = "none"
-
 }
 buildDockerImage.dependsOn dockerLogin
 task tagImageForRemote(type: me.gking2224.dockerplugin.task.TagImage) {
     registry = { project.dockerRepositoryName + "/" + project.group + "/" + project.name }
-    tag = project.version
+    tag = {project.version}
 }
 tagImageForRemote.dependsOn ecrGetLogin
 
@@ -279,3 +278,8 @@ task pushImage(type: me.gking2224.dockerplugin.task.PushImage) {
 pushImage.dependsOn tagImageForRemote
 
 postReleaseHook.dependsOn('buildDockerImage', 'pushImage')
+
+
+task testv (dependsOn: removeSnapshot) << {
+    println project.version
+}
