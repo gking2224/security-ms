@@ -1,3 +1,4 @@
+import groovy.xml.Namespace;
 
 buildscript {
     repositories {
@@ -13,11 +14,11 @@ buildscript {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.1.RELEASE")
 //        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.4.0"
         classpath "me.gking2224:BuildToolsGradlePlugin:0.2.6"
-        classpath "me.gking2224:AmazonAWSGradlePlugin:0.1.11"
+        classpath "me.gking2224:AmazonAWSGradlePlugin:0.1.12-SNAPSHOT"
         classpath "me.gking2224:DockerPlugin:0.0.+"
         classpath "me.gking2224:DatabaseBuildGradlePlugin:0.1.+"
         classpath "me.gking2224:WebAppBuildGradlePlugin:0.0.+"
-        classpath "me.gking2224:MicroServicesGradlePlugin:0.0.12"
+        classpath "me.gking2224:MicroServicesGradlePlugin:0.0.15"
         classpath "mysql:mysql-connector-java:5.1.39"
         classpath 'se.transmode.gradle:gradle-docker:1.2'
     }
@@ -225,3 +226,40 @@ clientlib {
         attributes 'Main-Class': 'me.gking2224.securityms.client.SecurityServiceClient'
     }
 }
+
+//
+//task getNextDevInstances(type:me.gking2224.awsplugin.task.ec2.GetInstances) {
+//    service = "securityms"
+//    env = "dev"
+//    version = "next"
+//}
+//
+//task getNextDevScalingGroup(type: me.gking2224.awsplugin.task.autoscaling.GetAutoScalingGroups, dependsOn:[getNextDevInstances])
+//getNextDevScalingGroup.doFirst {
+//    names = [] as Set
+//    getNextDevInstances.instances.each {
+//        it.getTags().findAll {it.getKey() == 'aws:autoscaling:groupName' }.each {
+//            def value = it.getValue()
+//            assert (names.isEmpty() || (names.size() == 1 && names.iterator().next() == value))
+//            names << it.getValue()
+//        }
+//    }
+//}
+//
+//task getNextDevServices(type: me.gking2224.awsplugin.task.ecs.ListServices, dependsOn:[getNextDevScalingGroup])
+//getNextDevServices.doFirst {
+//    getNextDevScalingGroup.autoScalingGroups.each {
+//        clusterName = it.getLaunchConfigurationName()
+//    }
+//}
+//
+//task updateNextDevService(type: me.gking2224.awsplugin.task.ecs.UpdateService, dependsOn:[getNextDevServices])
+//updateNextDevService.doFirst {
+//    clusterName = getNextDevServices.clusterName
+//    service = getNextDevServices.serviceArns[0]
+//    taskDefinitionArn = "arn:aws:ecs:eu-west-1:839324330571:task-definition/securityms-dev:19"
+//}
+//
+//updateNextDevService << {
+//    println updatedService
+//}
