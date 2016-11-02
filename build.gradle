@@ -13,7 +13,7 @@ buildscript {
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.1.RELEASE")
 //        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.4.0"
-        classpath "me.gking2224:BuildToolsGradlePlugin:0.2.6"
+        classpath "me.gking2224:BuildToolsGradlePlugin:0.2.7"
         classpath "me.gking2224:AmazonAWSGradlePlugin:0.1.13"
         classpath "me.gking2224:DockerPlugin:0.0.+"
         classpath "me.gking2224:DatabaseBuildGradlePlugin:0.1.+"
@@ -29,7 +29,7 @@ plugins {
 }
 
 ext {
-    buildToolsVersion = "0.2.6"
+    buildToolsVersion = "0.2.7"
     springVersion = "4.3.1.RELEASE"
     springDataVersion = "1.10.2.RELEASE"
     springBootVersion = "1.4.1.RELEASE"
