@@ -67,7 +67,7 @@ springBoot {
 }
 bootRun {
     jvmArgs "-Xdebug"
-    jvmArgs "-Xrunjdwp:server=y,transport=dt_socket,suspend=y,address="+project.envProps['build.jdwpPort']
+    jvmArgs "-Xrunjdwp:server=y,transport=dt_socket,suspend=n,address="+project.envProps['build.jdwpPort']
     jvmArgs "-Dorg.jboss.logging.provider=slf4j"
     args = ["-a", "batch", "web", "-e", "local"]
 //    args = ["--spring.profiles.active=jmx,web,batch,"+project.env, "--debug"]
@@ -161,7 +161,7 @@ dependencies {
     // UTILS
     compile group: 'org.aspectj', name: 'aspectjtools', version: '1.6.2'
     compile group: "me.gking2224", name: "gk-utils", version: "0.0.+"
-    compile("me.gking2224:gk-microservice-utils:0.0.+")
+    compile("me.gking2224:gk-microservice-utils:0.0.8")
     
     
     // TESTING
@@ -216,7 +216,7 @@ dependencies {
     clientlib("org.springframework:spring-jms:$springJmsVersion")
     clientlib "org.springframework:spring-web:$springVersion"
     clientlib("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
-    clientlib group: "me.gking2224", name: "gk-microservice-utils", classifier: "client", version: "0.0.5"
+    clientlib group: "me.gking2224", name: "gk-microservice-utils", classifier: "client", version: "0.0.8"
     clientlib("org.apache.activemq:activemq-core:5.7.0")
     clientlib("org.springframework.boot:spring-boot:$springBootVersion")
 }
@@ -226,40 +226,3 @@ clientlib {
         attributes 'Main-Class': 'me.gking2224.securityms.client.SecurityServiceClient'
     }
 }
-
-//
-//task getNextDevInstances(type:me.gking2224.awsplugin.task.ec2.GetInstances) {
-//    service = "securityms"
-//    env = "dev"
-//    version = "next"
-//}
-//
-//task getNextDevScalingGroup(type: me.gking2224.awsplugin.task.autoscaling.GetAutoScalingGroups, dependsOn:[getNextDevInstances])
-//getNextDevScalingGroup.doFirst {
-//    names = [] as Set
-//    getNextDevInstances.instances.each {
-//        it.getTags().findAll {it.getKey() == 'aws:autoscaling:groupName' }.each {
-//            def value = it.getValue()
-//            assert (names.isEmpty() || (names.size() == 1 && names.iterator().next() == value))
-//            names << it.getValue()
-//        }
-//    }
-//}
-//
-//task getNextDevServices(type: me.gking2224.awsplugin.task.ecs.ListServices, dependsOn:[getNextDevScalingGroup])
-//getNextDevServices.doFirst {
-//    getNextDevScalingGroup.autoScalingGroups.each {
-//        clusterName = it.getLaunchConfigurationName()
-//    }
-//}
-//
-//task updateNextDevService(type: me.gking2224.awsplugin.task.ecs.UpdateService, dependsOn:[getNextDevServices])
-//updateNextDevService.doFirst {
-//    clusterName = getNextDevServices.clusterName
-//    service = getNextDevServices.serviceArns[0]
-//    taskDefinitionArn = "arn:aws:ecs:eu-west-1:839324330571:task-definition/securityms-dev:19"
-//}
-//
-//updateNextDevService << {
-//    println updatedService
-//}
