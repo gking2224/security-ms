@@ -14,11 +14,11 @@ buildscript {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.1.RELEASE")
 //        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.4.0"
         classpath "me.gking2224:BuildToolsGradlePlugin:0.2.7"
-        classpath "me.gking2224:AmazonAWSGradlePlugin:0.1.16"
+        classpath "me.gking2224:AmazonAWSGradlePlugin:0.1.16-SNAPSHOT"
         classpath "me.gking2224:DockerPlugin:0.0.+"
         classpath "me.gking2224:DatabaseBuildGradlePlugin:0.1.+"
         classpath "me.gking2224:WebAppBuildGradlePlugin:0.0.+"
-        classpath "me.gking2224:MicroServicesGradlePlugin:0.0.24"
+        classpath "me.gking2224:MicroServicesGradlePlugin:0.0.25"
         classpath "mysql:mysql-connector-java:5.1.39"
         classpath 'se.transmode.gradle:gradle-docker:1.2'
     }
@@ -161,7 +161,7 @@ dependencies {
     // UTILS
     compile group: 'org.aspectj', name: 'aspectjtools', version: '1.6.2'
     compile group: "me.gking2224", name: "gk-utils", version: "0.0.+"
-    compile("me.gking2224:gk-microservice-utils:0.0.8")
+    compile("me.gking2224:gk-microservice-utils:0.0.9")
     
     
     // TESTING
@@ -216,7 +216,7 @@ dependencies {
     clientlib("org.springframework:spring-jms:$springJmsVersion")
     clientlib "org.springframework:spring-web:$springVersion"
     clientlib("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
-    clientlib group: "me.gking2224", name: "gk-microservice-utils", classifier: "client", version: "0.0.8"
+    clientlib group: "me.gking2224", name: "gk-microservice-utils", classifier: "client", version: "0.0.9"
     clientlib("org.apache.activemq:activemq-core:5.7.0")
     clientlib("org.springframework.boot:spring-boot:$springBootVersion")
 }
@@ -226,3 +226,44 @@ clientlib {
         attributes 'Main-Class': 'me.gking2224.securityms.client.SecurityServiceClient'
     }
 }
+
+task getDevInstances(type: me.gking2224.awsplugin.task.ec2.GetInstances) {
+    env = "dev"
+    version = ["current", "next", "previous"]
+    service = "securityms"
+}
+
+task getDevTargetGroups(type: me.gking2224.awsplugin.task.elb.GetTargetGroups) {
+    env = "dev"
+    version = ["current", "next", "previous"]
+    service = "securityms"
+}
+
+task moveNextDevToCurrent(type: me.gking2224.awsplugin.task.elb.ReRouteInstances, dependsOn:[getDevInstances, getDevTargetGroups])
+moveNextDevToCurrent.doFirst {
+    
+    instanceIds = getDevInstances.instances.next?.collect {it.instanceId}
+    fromTargetGroupArn = getDevTargetGroups.targetGroups.next?.targetGroupArn
+    toTargetGroupArn = getDevTargetGroups.targetGroups.current?.targetGroupArn
+    newVersionTag = "current"
+}
+
+task moveCurrentDevToPrevious(type: me.gking2224.awsplugin.task.elb.ReRouteInstances, dependsOn:[moveNextDevToCurrent])
+moveCurrentDevToPrevious.doFirst {
+    
+    instanceIds = getDevInstances.instances.current?.collect {it.instanceId}
+    fromTargetGroupArn = getDevTargetGroups.targetGroups.current?.targetGroupArn
+    toTargetGroupArn = getDevTargetGroups.targetGroups.previous?.targetGroupArn
+    newVersionTag = "previous"
+}
+
+task deRegisterPreviousDev(type: me.gking2224.awsplugin.task.elb.ReRouteInstances, dependsOn:[moveCurrentDevToPrevious])
+deRegisterPreviousDev.doFirst {
+    
+    instanceIds = getDevInstances.instances.previous?.collect {it.instanceId}
+    fromTargetGroupArn = getDevTargetGroups.targetGroups.previous?.targetGroupArn
+    toTargetGroupArn = null
+    newVersionTag = ""
+}
+
+task promoteNext(dependsOn: deRegisterPreviousDev)
