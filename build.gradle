@@ -337,12 +337,6 @@ registerPreviousDevInCurrent.doFirst {
     if (instanceIds == null || instanceIds.isEmpty()) throw new GradleException("no instances tagged as previous")
     targetGroupArn = getDevTargetGroups.targetGroups.current?.targetGroupArn
 }
-task deRegisterPreviousDevFromPrevious(type: me.gking2224.awsplugin.task.elb.DeRegisterTargets, dependsOn:[getDevInstances, getDevTargetGroups])
-deRegisterPreviousDevFromPrevious.doFirst {
-    instanceIds = getDevInstances.instances.previous?.collect {it.instanceId}
-    if (instanceIds == null || instanceIds.isEmpty()) throw new GradleException("no instances tagged as previous")
-    targetGroupArn = getDevTargetGroups.targetGroups.previous?.targetGroupArn
-}
 deRegisterPreviousDevFromPrevious.mustRunAfter registerPreviousDevInCurrent
 task tagPreviousDevAsCurrent(type: me.gking2224.awsplugin.task.ec2.TagInstance)
 tagPreviousDevAsCurrent.doFirst {
@@ -365,12 +359,6 @@ registerCurrentDevInNext.doFirst {
     instanceIds = getDevInstances.instances.current?.collect {it.instanceId}
     if (instanceIds == null || instanceIds.isEmpty()) throw new GradleException("no instances tagged as current")
     targetGroupArn = getDevTargetGroups.targetGroups.next?.targetGroupArn
-}
-task deRegisterCurrentDevFromCurrent(type: me.gking2224.awsplugin.task.elb.DeRegisterTargets, dependsOn:[getDevInstances, getDevTargetGroups])
-deRegisterCurrentDevFromCurrent.doFirst {
-    instanceIds = getDevInstances.instances.current?.collect {it.instanceId}
-    if (instanceIds == null || instanceIds.isEmpty()) throw new GradleException("no instances tagged as current")
-    targetGroupArn = getDevTargetGroups.targetGroups.current?.targetGroupArn
 }
 deRegisterCurrentDevFromCurrent.mustRunAfter registerCurrentDevInNext
 task tagCurrentDevAsNext(type: me.gking2224.awsplugin.task.ec2.TagInstance)
