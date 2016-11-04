@@ -263,7 +263,7 @@ deRegisterPreviousDev.doFirst {
     instanceIds = getDevInstances.instances.previous?.collect {it.instanceId}
     fromTargetGroupArn = getDevTargetGroups.targetGroups.previous?.targetGroupArn
     toTargetGroupArn = null
-    newVersionTag = ""
+    newVersionTag = "next"
 }
 
 task promoteNext(dependsOn: deRegisterPreviousDev)
