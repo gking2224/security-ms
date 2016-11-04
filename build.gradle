@@ -235,7 +235,7 @@ task getDevInstances(type: me.gking2224.awsplugin.task.ec2.GetInstances) {
 
 task getDevTargetGroups(type: me.gking2224.awsplugin.task.elb.GetTargetGroups) {
     env = "dev"
-    version = ["current", "next", "previous"]
+    version = ["current", "next", "previous", "none"]
     service = "securityms"
 }
 
@@ -243,6 +243,7 @@ task moveNextDevToCurrent(type: me.gking2224.awsplugin.task.elb.ReRouteInstances
 moveNextDevToCurrent.doFirst {
     
     instanceIds = getDevInstances.instances.next?.collect {it.instanceId}
+    if (instanceIds == null || instanceIds.isEmpty()) throw new GradleException("no instances tagged as next")
     fromTargetGroupArn = getDevTargetGroups.targetGroups.next?.targetGroupArn
     toTargetGroupArn = getDevTargetGroups.targetGroups.current?.targetGroupArn
     newVersionTag = "current"
@@ -263,7 +264,42 @@ deRegisterPreviousDev.doFirst {
     instanceIds = getDevInstances.instances.previous?.collect {it.instanceId}
     fromTargetGroupArn = getDevTargetGroups.targetGroups.previous?.targetGroupArn
     toTargetGroupArn = null
+    newVersionTag = "none"
+}
+
+task promoteNextDev(dependsOn: deRegisterPreviousDev)
+
+
+
+
+
+
+task movePreviousDevToCurrent(type: me.gking2224.awsplugin.task.elb.ReRouteInstances, dependsOn:[getDevInstances, getDevTargetGroups])
+movePreviousDevToCurrent.doFirst {
+    
+    instanceIds = getDevInstances.instances.previous?.collect {it.instanceId}
+    if (instanceIds == null || instanceIds.isEmpty()) throw new GradleException("no instances tagged as previous")
+    fromTargetGroupArn = getDevTargetGroups.targetGroups.previous?.targetGroupArn
+    toTargetGroupArn = getDevTargetGroups.targetGroups.current?.targetGroupArn
+    newVersionTag = "current"
+}
+
+task moveCurrentDevToNext(type: me.gking2224.awsplugin.task.elb.ReRouteInstances, dependsOn:[movePreviousDevToCurrent])
+moveCurrentDevToNext.doFirst {
+    
+    instanceIds = getDevInstances.instances.current?.collect {it.instanceId}
+    fromTargetGroupArn = getDevTargetGroups.targetGroups.current?.targetGroupArn
+    toTargetGroupArn = getDevTargetGroups.targetGroups.next?.targetGroupArn
     newVersionTag = "next"
 }
 
-task promoteNext(dependsOn: deRegisterPreviousDev)
+task deRegisterNextDev(type: me.gking2224.awsplugin.task.elb.ReRouteInstances, dependsOn:[moveCurrentDevToNext])
+deRegisterNextDev.doFirst {
+    
+    instanceIds = getDevInstances.instances.next?.collect {it.instanceId}
+    fromTargetGroupArn = getDevTargetGroups.targetGroups.next?.targetGroupArn
+    toTargetGroupArn = null
+    newVersionTag = "none"
+}
+
+task rollbackDev(dependsOn: deRegisterNextDev)
