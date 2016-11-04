@@ -260,7 +260,7 @@ tagNextDevAsCurrent.doFirst {
     tagKey = "version"
     tagValue = "current"
 }
-tagNextDevAsCurrent.mustRunAfter registerNextDevInCurrent, deRegisterDevNextFromNext
+tagNextDevAsCurrent.mustRunAfter registerNextDevInCurrent, deRegisterNextDevFromNext
 task moveNextDevToCurrent(dependsOn:[registerNextDevInCurrent, deRegisterNextDevFromNext, tagNextDevAsCurrent])
 
 
