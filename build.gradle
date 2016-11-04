@@ -319,7 +319,7 @@ task losePreviousDev(dependsOn:[deRegisterPreviousDevFromPrevious, tagPreviousDe
 
 
 
-task promoteNextDev(dependsOn: moveNextDevToCurrent, moveCurrentDevToPrevious, losePreviousDev)
+task promoteNextDev(dependsOn: [moveNextDevToCurrent, moveCurrentDevToPrevious, losePreviousDev])
 moveCurrentDevToPrevious.mustRunAfter moveNextDevToCurrent
 losePreviousDev.mustRunAfter moveCurrentDevToPrevious
 
@@ -387,7 +387,7 @@ task moveCurrentDevToNext(dependsOn:[registerCurrentDevInNext, deRegisterCurrent
 
 
 
-task rollbackDev(dependsOn: movePreviousDevToCurrent, moveCurrentDevToNext)
+task rollbackDev(dependsOn: [movePreviousDevToCurrent, moveCurrentDevToNext])
 moveCurrentDevToNext.mustRunAfter movePreviousDevToCurrent
 
 
