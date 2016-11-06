@@ -5,9 +5,9 @@ import org.springframework.context.annotation.Import;
 
 import me.gking2224.common.test.WebAppTestConfigurer;
 import me.gking2224.securityms.SecurityMicroServiceTestConfiguration;
-import me.gking2224.securityms.web.WebAppConfiguration;
 
-@Import({SecurityMicroServiceTestConfiguration.class, WebAppConfiguration.class})
-public class WebAppTestConfiguration extends WebAppTestConfigurer {
+@Import({SecurityMicroServiceTestConfiguration.class})
+@org.springframework.test.context.web.WebAppConfiguration
+public class SecurityServiceWebAppTestConfiguration extends WebAppTestConfigurer {
     
 }

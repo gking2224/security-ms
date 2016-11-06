@@ -7,7 +7,6 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
-import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,7 +17,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
@@ -28,10 +26,9 @@ import me.gking2224.common.utils.test.JsonMvcTestHelper;
 import me.gking2224.securityms.SecurityServiceTestInitializer;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@WebAppConfiguration
-@ActiveProfiles("web")
-@ContextConfiguration(name="securityms", classes=WebAppTestConfiguration.class, initializers={SecurityServiceTestInitializer.class})
+@ContextConfiguration(name="securityms", classes=SecurityServiceWebAppTestConfiguration.class, initializers={SecurityServiceTestInitializer.class})
 @Transactional
+@ActiveProfiles("web")
 @SpringBootTest()
 @Rollback
 @Sql("../../SingleUser.sql")
@@ -42,6 +39,7 @@ public class SecurityControllerTest {
 
     private MockMvc mockMvc;
     
+    @SuppressWarnings("unused")
     private JsonUtil json;
     
     @Before

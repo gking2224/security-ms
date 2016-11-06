@@ -8,8 +8,9 @@ import me.gking2224.securityms.db.DatabaseConfiguration;
 import me.gking2224.securityms.db.EmbeddedDatabaseConfiguration;
 import me.gking2224.securityms.db.jpa.JpaConfiguration;
 import me.gking2224.securityms.security.SecurityConfiguration;
+import me.gking2224.securityms.web.WebAppConfiguration;
 
-@Import({CommonTestConfiguration.class, DatabaseConfiguration.class, EmbeddedDatabaseConfiguration.class, JpaConfiguration.class, SecurityConfiguration.class})
+@Import({CommonTestConfiguration.class, DatabaseConfiguration.class, EmbeddedDatabaseConfiguration.class, JpaConfiguration.class, SecurityConfiguration.class, WebAppConfiguration.class})
 @ComponentScan({"me.gking2224.securityms.model", "me.gking2224.securityms.service"})
 public class SecurityMicroServiceTestConfiguration {
 
