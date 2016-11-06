@@ -25,12 +25,12 @@ import org.springframework.web.context.WebApplicationContext;
 
 import me.gking2224.common.utils.JsonUtil;
 import me.gking2224.common.utils.test.JsonMvcTestHelper;
-import me.gking2224.securityms.TestInitializer;
+import me.gking2224.securityms.SecurityServiceTestInitializer;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @ActiveProfiles("web")
-@ContextConfiguration(name="securityms", classes=WebAppTestConfiguration.class, initializers={TestInitializer.class})
+@ContextConfiguration(name="securityms", classes=WebAppTestConfiguration.class, initializers={SecurityServiceTestInitializer.class})
 @Transactional
 @SpringBootTest()
 @Rollback

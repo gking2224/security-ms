@@ -7,13 +7,6 @@
             Service Persistence Unit
         </description>
 
-<!--     <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider> -->
-        <!-- <class>me.gking2224.model.jpa.ModelManifest</class>
-        <class>me.gking2224.model.jpa.ModelType</class>
-        <class>me.gking2224.model.jpa.Model</class>
-        <class>me.gking2224.model.jpa.ModelVariable</class>
-        <class>me.gking2224.model.jpa.Variable</class>
-        <class>me.gking2224.model.jpa.BigDecimalToVersionConverter</class> -->
         <properties>
             <property name="javax.persistence.jdbc.driver" value="<%=envProps['db.database.driver']%>" />
             <property name="javax.persistence.jdbc.url" value="<%=envProps['database.xmlfriendlyurl']%>" />

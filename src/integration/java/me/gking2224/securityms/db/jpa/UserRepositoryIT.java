@@ -15,15 +15,15 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import me.gking2224.securityms.TestConfiguration;
-import me.gking2224.securityms.TestInitializer;
+import me.gking2224.securityms.SecurityMicroServiceTestConfiguration;
+import me.gking2224.securityms.SecurityServiceTestInitializer;
 import me.gking2224.securityms.model.Permission;
 import me.gking2224.securityms.model.Role;
 import me.gking2224.securityms.model.RolePermission;
 import me.gking2224.securityms.model.User;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(name="securityms", classes=TestConfiguration.class, initializers={TestInitializer.class})
+@ContextConfiguration(name="securityms", classes=SecurityMicroServiceTestConfiguration.class, initializers={SecurityServiceTestInitializer.class})
 @Transactional
 @Rollback
 public class UserRepositoryIT {
