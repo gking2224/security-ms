@@ -13,12 +13,12 @@ buildscript {
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.1.RELEASE")
 //        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.4.0"
-        classpath group: "me.gking2224", name:"BuildToolsGradlePlugin", version:"0.2.+", changing: true
-        classpath group: "me.gking2224", name:"AmazonAWSGradlePlugin", version:"0.1.+", changing: true
-        classpath group: "me.gking2224", name:"DockerPlugin", version:"0.0.+", changing: true
-        classpath group: "me.gking2224", name:"DatabaseBuildGradlePlugin", version:"0.1.+", changing: true
-        classpath group: "me.gking2224", name:"WebAppBuildGradlePlugin", version:"0.0.+", changing: true
-        classpath group: "me.gking2224", name:"MicroServicesGradlePlugin", version:"0.0.+", changing: true
+        classpath group: "me.gking2224", name:"BuildToolsGradlePlugin", version:"0.2.+"
+        classpath group: "me.gking2224", name:"AmazonAWSGradlePlugin", version:"0.1.+"
+        classpath group: "me.gking2224", name:"DockerPlugin", version:"0.0.+"
+        classpath group: "me.gking2224", name:"DatabaseBuildGradlePlugin", version:"0.1.+"
+        classpath group: "me.gking2224", name:"WebAppBuildGradlePlugin", version:"0.0.+"
+        classpath group: "me.gking2224", name:"MicroServicesGradlePlugin", version:"0.0.+"
         classpath "mysql:mysql-connector-java:5.1.39"
         classpath 'se.transmode.gradle:gradle-docker:1.2'
     }
