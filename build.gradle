@@ -56,7 +56,6 @@ apply plugin: 'me.gking2224.dockerplugin'
 apply plugin: 'me.gking2224.databasebuild'
 apply plugin: 'me.gking2224.webappbuild'
 apply plugin: 'me.gking2224.msplugin'
-//apply plugin: 'docker'
 
 apply plugin: 'spring-boot'
 springBoot {
