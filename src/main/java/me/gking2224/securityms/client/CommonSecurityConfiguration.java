@@ -11,12 +11,10 @@ import javax.jms.Topic;
 
 import org.apache.activemq.command.ActiveMQTopic;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.jms.annotation.JmsListener;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -28,10 +26,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CsrfToken;
-import org.springframework.web.client.RestTemplate;
 
 import me.gking2224.common.client.EnvironmentProperties;
-import me.gking2224.common.client.MicroServiceEnvironment;
 import me.gking2224.securityms.common.SecurityErrorHandler;
 
 @EnableWebSecurity
@@ -39,39 +35,12 @@ import me.gking2224.securityms.common.SecurityErrorHandler;
 @EnvironmentProperties(value="props:/security.properties", name="common-security", prefix="security")
 public class CommonSecurityConfiguration extends WebSecurityConfigurerAdapter {
     
-    private static final String DEFAULT_SECURITY_SERVICE_HOST = "localhost";
-    private static final Integer DEFAULT_SECURITY_SERVICE_PORT = 11000;
-    private static final String DEFAULT_SECURITY_SERVICE_CONTEXT = "security";
-    
-    @Autowired SecurityServiceClient serviceClient;
     @Autowired TokenProcessingFilter tokenFilter;
     @Autowired(required=false) WebSecurityConfigurer webSecurityConfigurer;
     @Autowired(required=false) HttpSecurityConfigurer httpSecurityConfigurer;
     @Autowired SecurityErrorHandler errorHandler;
     @Autowired NonHtmlBasicAuthenticationEntryPoint authEntryPoint;
     @Autowired SecurityServiceClient securityServiceClient;
-    @Autowired MicroServiceEnvironment env;
-
-    @Bean
-    public SecurityServiceClient securityClient(
-            final RestTemplate restTemplate,
-            @Autowired @Qualifier("pubSubTemplate") final JmsTemplate pubSubTemplate,
-            @Qualifier(KEEP_TOKEN_ALIVE_TOPIC) Topic keepTokenAliveTopic,
-            @Qualifier(TOKEN_INVALIDATED_TOPIC) Topic tokenInvalidatedTopic,
-            @Qualifier(TOKEN_EXPIRED_TOPIC) Topic tokenExpiredTopic
-    ) throws Exception {
-        SecurityServiceClient client = new SecurityServiceClient();
-        client.setHost(env.getProperty("security.securityService.host", DEFAULT_SECURITY_SERVICE_HOST));
-        client.setPort(env.getProperty("security.securityService.port", Integer.class, DEFAULT_SECURITY_SERVICE_PORT));
-        client.setContext(env.getProperty("security.securityService.context", DEFAULT_SECURITY_SERVICE_CONTEXT));
-        client.setRestTemplate(restTemplate);
-        client.setJmsTemplate(pubSubTemplate);
-        client.setKeepTokenAliveTopic(keepTokenAliveTopic);
-        client.setTokenInvalidatedTopic(tokenInvalidatedTopic);
-        client.setTokenExpiredTopic(tokenExpiredTopic);
-        client.afterPropertiesSet();
-        return client;
-    }
 
 //    @Autowired
 //    private CookieCsrfTokenRepository csrfTokenRepository;
@@ -93,7 +62,7 @@ public class CommonSecurityConfiguration extends WebSecurityConfigurerAdapter {
             public Authentication authenticate(final Authentication authentication) throws AuthenticationException {
                 
                 UsernamePasswordAuthenticationToken a = (UsernamePasswordAuthenticationToken)authentication;
-                return serviceClient.authenticate((String)a.getPrincipal(), (String)a.getCredentials());
+                return securityServiceClient.authenticate((String)a.getPrincipal(), (String)a.getCredentials());
             }
 
             @Override
