@@ -67,7 +67,7 @@ bootRun {
     jvmArgs "-Xdebug"
     jvmArgs "-Xrunjdwp:server=y,transport=dt_socket,suspend=n,address="+project.envProps['build.jdwpPort']
     jvmArgs "-Dorg.jboss.logging.provider=slf4j"
-    args = ["-a", "batch", "web", "-e", "local"]
+    args = ["-a", "web", "-e", "local"]
 //    args = ["--spring.profiles.active=jmx,web,batch,"+project.env, "--debug"]
 }
 bootRepackage {
