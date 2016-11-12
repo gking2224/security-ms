@@ -199,7 +199,7 @@ SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
 -- Data for table `User`
 -- -----------------------------------------------------
 START TRANSACTION;
-INSERT INTO `User` (`user_id`, `username`, `password`, `enabled`, `firstName`, `surname`) VALUES (-1, 'super', '\\\\$2a\\\\$10\\\\$o4O4U.WFvUV5pTG/vx2r1.zF5QrjCF.4bE6pK8cK8X3Fy8yC7Vszq', 1, 'Super', 'User');
+INSERT INTO `User` (`user_id`, `username`, `password`, `enabled`, `firstName`, `surname`) VALUES (-1, 'super', '', 1, 'Super', 'User');
 
 COMMIT;
 
