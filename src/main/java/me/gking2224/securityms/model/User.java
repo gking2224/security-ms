@@ -19,13 +19,14 @@ import javax.persistence.Transient;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import me.gking2224.common.model.NullAbstractEntity;
 import me.gking2224.common.web.View.Summary;
 import me.gking2224.securityms.client.UserDetails;
 import me.gking2224.securityms.service.PermissionsHelper;
 
 @Entity
 @Table
-public class User implements java.io.Serializable {
+public class User extends NullAbstractEntity<Long> implements java.io.Serializable {
 
     /**
      * 

@@ -10,9 +10,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import me.gking2224.common.model.NullAbstractEntity;
+
 @Entity
 @Table
-public class Token {
+public class Token extends NullAbstractEntity<Long> {
     
     private Long id;
 
