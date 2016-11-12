@@ -190,4 +190,19 @@ public class User extends NullAbstractEntity<Long> implements java.io.Serializab
             return false;
         return true;
     }
+
+    public void addPermission(Permission p) {
+        UserPermission up = new UserPermission();
+        UserPermissionId pk = new UserPermissionId();
+        pk.setPermission(p);
+        pk.setUser(this);
+        up.setPk(pk);
+        up.setEnabled(true);
+        getUserPermissions().add(up);
+    }
+
+
+    public void addRole(Role r) {
+        getRoles().add(r);
+    }
 }

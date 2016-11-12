@@ -14,11 +14,12 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import me.gking2224.common.model.NullAbstractEntity;
 import me.gking2224.common.web.View.Summary;
 
 @Entity
 @Table
-public class Role implements java.io.Serializable {
+public class Role extends NullAbstractEntity<Long> implements java.io.Serializable {
 
     /**
      * 
@@ -77,5 +78,15 @@ public class Role implements java.io.Serializable {
 
     public void setRolePermissions(Set<RolePermission> rolePermissions) {
         this.rolePermissions = rolePermissions;
+    }
+
+    public void addPermission(Permission p) {
+        RolePermission rp = new RolePermission();
+        RolePermissionId pk = new RolePermissionId();
+        pk.setPermission(p);
+        pk.setRole(this);
+        rp.setPk(pk);
+        rp.setEnabled(true);
+        getRolePermissions().add(rp);
     }
 }

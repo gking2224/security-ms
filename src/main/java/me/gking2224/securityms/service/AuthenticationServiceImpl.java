@@ -187,7 +187,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if (!user.isEnabled()) {
             throw new DisabledException(user.getUsername());
         }
-        
     }
 
     private Long getTimeout() {

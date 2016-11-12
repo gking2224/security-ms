@@ -17,11 +17,12 @@ import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import me.gking2224.common.model.NullAbstractEntity;
 import me.gking2224.common.web.View.Summary;
 
 @Entity
 @Table
-public class Permission implements java.io.Serializable {
+public class Permission extends NullAbstractEntity<Long> implements java.io.Serializable {
 
     /**
      * 
