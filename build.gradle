@@ -13,7 +13,7 @@ buildscript {
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.1.RELEASE")
 //        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.4.0"
-        classpath group: "me.gking2224", name:"BuildToolsGradlePlugin", version:"0.2.+"
+        classpath group: "me.gking2224", name:"BuildToolsGradlePlugin", version:"0.3.+"
         classpath group: "me.gking2224", name:"AmazonAWSGradlePlugin", version:"0.1.+"
         classpath group: "me.gking2224", name:"DockerPlugin", version:"0.0.+"
         classpath group: "me.gking2224", name:"DatabaseBuildGradlePlugin", version:"0.1.+"
@@ -27,6 +27,13 @@ plugins {
   id "groovy"
   id 'net.saliman.cobertura' version '2.3.2'
 }
+apply plugin: 'me.gking2224.buildtools'
+
+buildtools {
+    eclipseEnabled()
+    mavenEnabled()
+}
+applyBuildTools()
 
 ext {
     buildToolsVersion = "0.2.+"
@@ -50,7 +57,6 @@ jar {
 apply from: 'database.gradle'
 apply from: 'environments.gradle'
 
-apply plugin: 'me.gking2224.buildtools'
 apply plugin: 'me.gking2224.awsplugin'
 apply plugin: 'me.gking2224.dockerplugin'
 apply plugin: 'me.gking2224.databasebuild'
