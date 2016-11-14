@@ -37,7 +37,6 @@ import me.gking2224.common.utils.RandomString;
 import me.gking2224.securityms.client.CommonSecurityConfiguration;
 import me.gking2224.securityms.client.HttpSecurityConfigurer;
 
-@Import(CommonSecurityConfiguration.class)
 @ComponentScan("me.gking2224.securityms.security")
 @Configuration
 public class SecurityConfiguration {
@@ -66,15 +65,6 @@ public class SecurityConfiguration {
     protected byte[] getBytes(final String s) {
         return s.getBytes(charset);
     }
-    @Bean
-    HttpSecurityConfigurer httpSecurityConfigurer() {
-        return new HttpSecurityConfigurer() {
-            @Override
-            public void configure(final HttpSecurity http) throws Exception {
-            }
-        };
-    }
-
     
     @Bean
     public BytesEncryptor encryptor() {
