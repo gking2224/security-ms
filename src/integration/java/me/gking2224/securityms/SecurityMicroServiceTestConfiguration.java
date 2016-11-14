@@ -11,7 +11,7 @@ import me.gking2224.securityms.security.SecurityConfiguration;
 import me.gking2224.securityms.web.WebAppConfiguration;
 
 @Import({CommonTestConfiguration.class, DatabaseConfiguration.class, EmbeddedDatabaseConfiguration.class, JpaConfiguration.class, SecurityConfiguration.class, WebAppConfiguration.class})
-@ComponentScan({"me.gking2224.securityms.model", "me.gking2224.securityms.service"})
+@ComponentScan({"me.gking2224.securityms.model", "me.gking2224.securityms.service", "me.gking2224.securityms.common"})
 public class SecurityMicroServiceTestConfiguration {
 
 }

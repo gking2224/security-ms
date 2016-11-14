@@ -24,7 +24,6 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.token.KeyBasedPersistenceTokenService;
 import org.springframework.security.core.token.TokenService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -35,8 +34,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import me.gking2224.common.client.MicroServiceEnvironment;
 import me.gking2224.common.utils.RandomString;
 import me.gking2224.securityms.client.CommonSecurityConfiguration;
-import me.gking2224.securityms.client.HttpSecurityConfigurer;
 
+@Import(CommonSecurityConfiguration.class)
 @ComponentScan("me.gking2224.securityms.security")
 @Configuration
 public class SecurityConfiguration {
