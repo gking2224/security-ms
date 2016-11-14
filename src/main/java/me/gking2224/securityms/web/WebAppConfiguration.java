@@ -6,7 +6,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
 @Profile("web")
-@ComponentScan({"me.gking2224.securityms.web"})
+@ComponentScan({"me.gking2224.securityms.web", "me.gking2224.securityms.client.web"})
 @EnableWebMvc
 public class WebAppConfiguration extends WebMvcConfigurationSupport {
 }

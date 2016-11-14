@@ -1,4 +1,4 @@
-package me.gking2224.securityms.common;
+package me.gking2224.securityms.client.web;
 
 import java.io.IOException;
 

@@ -28,7 +28,7 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 import org.springframework.security.web.csrf.CsrfToken;
 
 import me.gking2224.common.client.EnvironmentProperties;
-import me.gking2224.securityms.common.SecurityErrorHandler;
+import me.gking2224.securityms.client.web.SecurityErrorHandler;
 
 @EnableWebSecurity
 @ComponentScan({"me.gking2224.securityms.client", "me.gking2224.securityms.common"})

@@ -1,4 +1,4 @@
-package me.gking2224.securityms.security;
+package me.gking2224.securityms.web;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

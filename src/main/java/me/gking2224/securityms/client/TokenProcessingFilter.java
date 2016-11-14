@@ -20,7 +20,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import me.gking2224.common.client.ErrorResponse;
 import me.gking2224.common.client.ErrorResponseException;
-import me.gking2224.securityms.common.SecurityErrorHandler;
+import me.gking2224.securityms.client.web.SecurityErrorHandler;
 
 @Component
 public class TokenProcessingFilter extends OncePerRequestFilter {
