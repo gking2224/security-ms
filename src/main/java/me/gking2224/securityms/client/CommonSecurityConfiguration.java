@@ -1,4 +1,4 @@
-package me.gking2224.securityms.security;
+package me.gking2224.securityms.client;
 
 import static me.gking2224.common.client.jms.CommonMessagingConfiguration.TOPIC_LISTENER_CONTAINER_FACTORY;
 import static me.gking2224.securityms.client.SecurityServiceClient.KEEP_TOKEN_ALIVE_TOPIC;
@@ -33,20 +33,11 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import me.gking2224.common.client.EnvironmentProperties;
-import me.gking2224.common.web.WebConfigurationOptions;
-import me.gking2224.securityms.client.HttpSecurityConfigurer;
-import me.gking2224.securityms.client.MapStore;
-import me.gking2224.securityms.client.NonHtmlBasicAuthenticationEntryPoint;
-import me.gking2224.securityms.client.SecurityServiceClient;
-import me.gking2224.securityms.client.Store;
-import me.gking2224.securityms.client.TokenExpiredMessage;
-import me.gking2224.securityms.client.TokenInvalidatedMessage;
-import me.gking2224.securityms.client.TokenProcessingFilter;
-import me.gking2224.securityms.client.WebSecurityConfigurer;
+import me.gking2224.common.client.WebConfigurationOptions;
 import me.gking2224.securityms.client.web.SecurityErrorHandler;
 
 @EnableWebSecurity
-@ComponentScan({"me.gking2224.securityms.client", "me.gking2224.securityms.common"})
+@ComponentScan(basePackages="me.gking2224.securityms.client")
 @EnvironmentProperties(value="props:/security.properties", name="common-security", prefix="security")
 public class CommonSecurityConfiguration extends WebSecurityConfigurerAdapter {
     
@@ -56,9 +47,6 @@ public class CommonSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired SecurityErrorHandler errorHandler;
     @Autowired NonHtmlBasicAuthenticationEntryPoint authEntryPoint;
     @Autowired SecurityServiceClient securityServiceClient;
-
-//    @Autowired
-//    private CookieCsrfTokenRepository csrfTokenRepository;
 
     @Autowired private WebConfigurationOptions options;
     @Autowired private CorsConfigurationSource corsConfig;
