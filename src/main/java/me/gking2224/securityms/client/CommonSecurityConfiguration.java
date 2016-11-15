@@ -13,6 +13,7 @@ import javax.jms.Topic;
 
 import org.apache.activemq.command.ActiveMQTopic;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -123,10 +124,12 @@ public class CommonSecurityConfiguration extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
+    @ConditionalOnMissingBean(CorsConfigurationSource.class)
     public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
+        CorsConfiguration configuration = new LoggingCorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList(options.getAllowedCorsOrigins()));
         configuration.setAllowedMethods(Arrays.asList(options.getAllowedCorsMethods()));
+        configuration.setAllowedHeaders(Arrays.asList(options.getAllowedRequestHeaders()));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
