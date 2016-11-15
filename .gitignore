@@ -8,3 +8,4 @@
 /secret.properties
 tmp/
 /dep.out
+/logback-local.xml

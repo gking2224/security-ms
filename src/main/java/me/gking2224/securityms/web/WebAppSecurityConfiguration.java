@@ -12,8 +12,11 @@ import me.gking2224.securityms.client.HttpSecurityConfigurer;
 @Import(CommonSecurityConfiguration.class)
 @Profile("web")
 @Configuration
-public class WebSecurityConfiguration {
-    
+public class WebAppSecurityConfiguration {
+
+    public WebAppSecurityConfiguration() {
+        
+    }
     @Bean
     HttpSecurityConfigurer httpSecurityConfigurer() {
         return new HttpSecurityConfigurer() {
