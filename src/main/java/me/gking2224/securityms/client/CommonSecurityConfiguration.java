@@ -5,6 +5,8 @@ import static me.gking2224.securityms.client.SecurityServiceClient.KEEP_TOKEN_AL
 import static me.gking2224.securityms.client.SecurityServiceClient.TOKEN_EXPIRED_TOPIC;
 import static me.gking2224.securityms.client.SecurityServiceClient.TOKEN_INVALIDATED_TOPIC;
 
+import java.util.Arrays;
+
 import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 import javax.jms.Topic;
@@ -26,8 +28,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import me.gking2224.common.client.EnvironmentProperties;
+import me.gking2224.common.web.WebConfigurationOptions;
 import me.gking2224.securityms.client.web.SecurityErrorHandler;
 
 @EnableWebSecurity
@@ -44,6 +50,9 @@ public class CommonSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
 //    @Autowired
 //    private CookieCsrfTokenRepository csrfTokenRepository;
+
+    @Autowired private WebConfigurationOptions options;
+    @Autowired private CorsConfigurationSource corsConfig;
     
     @Bean("csrfTokenStore")
     public Store<String, CsrfToken> csrfTokenStore() {
@@ -91,6 +100,7 @@ public class CommonSecurityConfiguration extends WebSecurityConfigurerAdapter {
         if (httpSecurityConfigurer != null) {
             httpSecurityConfigurer.configure(http);
         }
+        http.cors().configurationSource(corsConfig);
         http.csrf().disable();
         http.httpBasic().authenticationEntryPoint(authEntryPoint);
     }
@@ -113,6 +123,16 @@ public class CommonSecurityConfiguration extends WebSecurityConfigurerAdapter {
     public void tokenExpired(ObjectMessage message) throws JMSException {
         TokenExpiredMessage m = (TokenExpiredMessage)message.getObject();
         securityServiceClient.tokenExpired(m.getToken());
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Arrays.asList(options.getAllowedCorsOrigins()));
+        configuration.setAllowedMethods(Arrays.asList(options.getAllowedCorsMethods()));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
     
     @Bean(KEEP_TOKEN_ALIVE_TOPIC)
