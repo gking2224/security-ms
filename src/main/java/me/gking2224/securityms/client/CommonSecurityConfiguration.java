@@ -91,7 +91,6 @@ public class CommonSecurityConfiguration extends WebSecurityConfigurerAdapter {
         if (httpSecurityConfigurer != null) {
             httpSecurityConfigurer.configure(http);
         }
-        http.cors();
         http.csrf().disable();
         http.httpBasic().authenticationEntryPoint(authEntryPoint);
     }

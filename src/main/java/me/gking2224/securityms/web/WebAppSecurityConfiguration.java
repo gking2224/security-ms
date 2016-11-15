@@ -5,6 +5,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.CorsConfigurer;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 import me.gking2224.securityms.client.CommonSecurityConfiguration;
 import me.gking2224.securityms.client.HttpSecurityConfigurer;
@@ -20,8 +22,11 @@ public class WebAppSecurityConfiguration {
     @Bean
     HttpSecurityConfigurer httpSecurityConfigurer() {
         return new HttpSecurityConfigurer() {
+            private CorsConfigurationSource configurationSource;
+
             @Override
             public void configure(final HttpSecurity http) throws Exception {
+                CorsConfigurer<HttpSecurity> cors = http.cors();
             }
         };
     }
