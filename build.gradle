@@ -18,7 +18,7 @@ buildscript {
         classpath group: "me.gking2224", name:"DockerPlugin", version:"0.0.+"
         classpath group: "me.gking2224", name:"DatabaseBuildGradlePlugin", version:"0.1.+"
         classpath group: "me.gking2224", name:"WebAppBuildGradlePlugin", version:"0.0.+"
-        classpath group: "me.gking2224", name:"MicroServicesGradlePlugin", version:"0.0.+"
+        classpath group: "me.gking2224", name:"MicroServicesGradlePlugin", version:"0.1.+"
         classpath "mysql:mysql-connector-java:5.1.39"
         classpath 'se.transmode.gradle:gradle-docker:1.2'
     }
@@ -232,4 +232,6 @@ clientlib {
         attributes 'Main-Class': 'me.gking2224.securityms.client.SecurityServiceClient'
     }
 }
-
+buildDockerImage.doFirst {
+    addFile "build/libs/${project.name}-${project.preReleaseVersion}-boot.jar",  "\$WORK_DIR/service.jar"
+}
