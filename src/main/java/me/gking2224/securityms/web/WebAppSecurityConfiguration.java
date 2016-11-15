@@ -6,8 +6,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
-import me.gking2224.securityms.client.CommonSecurityConfiguration;
 import me.gking2224.securityms.client.HttpSecurityConfigurer;
+import me.gking2224.securityms.security.CommonSecurityConfiguration;
 
 @Import(CommonSecurityConfiguration.class)
 @Profile("web")

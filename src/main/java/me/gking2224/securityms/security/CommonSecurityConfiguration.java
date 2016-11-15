@@ -1,4 +1,4 @@
-package me.gking2224.securityms.client;
+package me.gking2224.securityms.security;
 
 import static me.gking2224.common.client.jms.CommonMessagingConfiguration.TOPIC_LISTENER_CONTAINER_FACTORY;
 import static me.gking2224.securityms.client.SecurityServiceClient.KEEP_TOKEN_ALIVE_TOPIC;
@@ -34,6 +34,15 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import me.gking2224.common.client.EnvironmentProperties;
 import me.gking2224.common.web.WebConfigurationOptions;
+import me.gking2224.securityms.client.HttpSecurityConfigurer;
+import me.gking2224.securityms.client.MapStore;
+import me.gking2224.securityms.client.NonHtmlBasicAuthenticationEntryPoint;
+import me.gking2224.securityms.client.SecurityServiceClient;
+import me.gking2224.securityms.client.Store;
+import me.gking2224.securityms.client.TokenExpiredMessage;
+import me.gking2224.securityms.client.TokenInvalidatedMessage;
+import me.gking2224.securityms.client.TokenProcessingFilter;
+import me.gking2224.securityms.client.WebSecurityConfigurer;
 import me.gking2224.securityms.client.web.SecurityErrorHandler;
 
 @EnableWebSecurity
