@@ -7,6 +7,6 @@ import org.springframework.stereotype.Component;
 public class HttpSecurityConfigurer implements me.gking2224.securityms.client.HttpSecurityConfigurer {
     @Override
     public void configure(final HttpSecurity http) throws Exception {
-        
+        http.headers().httpStrictTransportSecurity().disable();
     }
 }
