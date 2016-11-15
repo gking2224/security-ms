@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Import;
 
 import me.gking2224.common.AbstractMicroServiceApplication;
 import me.gking2224.common.CommonConfiguration;
+import me.gking2224.securityms.aop.AopConfiguration;
 import me.gking2224.securityms.batch.BatchConfiguration;
 import me.gking2224.securityms.db.DatabaseConfiguration;
 import me.gking2224.securityms.db.EmbeddedDatabaseConfiguration;
@@ -20,6 +21,7 @@ import me.gking2224.securityms.web.WebAppConfiguration;
 @ComponentScan(basePackages={"me.gking2224.securityms.service", "me.gking2224.securityms.model", "me.gking2224.securityms.common"})
 @Import({
     CommonConfiguration.class,
+    AopConfiguration.class,
     DatabaseConfiguration.class, EmbeddedDatabaseConfiguration.class,
     WebAppConfiguration.class,
     BatchConfiguration.class,
