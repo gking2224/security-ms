@@ -19,6 +19,7 @@ import me.gking2224.common.client.MicroServiceEnvironment;
 @Component
 public class SecurityServiceClientFactory {
     
+    private static final String DEFAULT_SECURITY_SERVICE_PROTOCOL = "https";
     private static final String DEFAULT_SECURITY_SERVICE_HOST = "localhost";
     private static final Integer DEFAULT_SECURITY_SERVICE_PORT = 11000;
     private static final String DEFAULT_SECURITY_SERVICE_CONTEXT = "security";
@@ -34,6 +35,7 @@ public class SecurityServiceClientFactory {
             @Qualifier(TOKEN_EXPIRED_TOPIC) Topic tokenExpiredTopic
     ) throws Exception {
         SecurityServiceClient client = new SecurityServiceClient();
+        client.setProtocol(env.getProperty("security.securityService.protocol", DEFAULT_SECURITY_SERVICE_PROTOCOL));
         client.setHost(env.getProperty("security.securityService.host", DEFAULT_SECURITY_SERVICE_HOST));
         client.setPort(env.getProperty("security.securityService.port", Integer.class, DEFAULT_SECURITY_SERVICE_PORT));
         client.setContext(env.getProperty("security.securityService.context", DEFAULT_SECURITY_SERVICE_CONTEXT));
